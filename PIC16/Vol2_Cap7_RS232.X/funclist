@@ -1,0 +1,9 @@
+__stringtab: STRING, 3 0 6
+__stringdata: STRING, 9 0 57
+_putch: CODE, 1843 0 12
+_main: CODE, 1954 0 94
+__initialization: CODE, 1828 0 0
+_getch: CODE, 1832 0 11
+_printf: CODE, 1873 0 81
+_init_comms: CODE, 1855 0 18
+Total: 279
