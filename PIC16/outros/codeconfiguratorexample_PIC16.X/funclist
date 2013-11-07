@@ -1,0 +1,16 @@
+_SYSTEM_Initializer: CODE, 308 0 21
+_main: CODE, 453 0 4
+_TMR0_InitializerDefault: CODE, 405 0 11
+_TMR1_InitializerDefault: CODE, 364 0 14
+_PIN_MANAGER_Initializer: CODE, 279 0 29
+__initialization: CODE, 32 0 15
+_I2C_ISR: CODE, 329 0 21
+_I2C_InitializerDefault: CODE, 350 0 14
+_INTERRUPT_InterruptManager: CODE, 4 0 26
+_I2C_WriteFrame: CODE, 186 0 93
+_I2C_ReadFrame: CODE, 50 0 136
+_OSCILLATOR_InitializerDefault: CODE, 447 0 6
+_ADC_InitializerDefault: CODE, 426 0 8
+_EUSART_InitializerDefault: CODE, 392 0 13
+_I2C_BusCollisionISR: CODE, 434 0 7
+Total: 418

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration device="PIC16F1824">
+    <managers>
+        <manager name="System">
+            <initializer comment="" name="InitializerDefault">
+                <setting name="SPLLEN" option="disabled"/>
+                <setting name="SCS" option="FOSC"/>
+                <setting name="IRCF" option="500KHz_MF"/>
+                <setting name="OSTS" option="intosc"/>
+                <setting name="HFIOFR" option="disabled"/>
+                <setting name="HFIOFS" option="not0.5percent_acc"/>
+                <setting name="PLLR" option="disabled"/>
+                <setting name="MFIOFR" option="disabled"/>
+                <setting name="T1OSCR" option="disabled"/>
+                <setting name="LFIOFR" option="disabled"/>
+                <setting name="HFIOFL" option="not2percent_acc"/>
+                <setting name="OSCTUNE" option="0x0"/>
+                <additionalSetting name="extclk" option="1.0 MHz"/>
+            </initializer>
+            <setting name="FOSC" option="INTOSC"/>
+            <setting name="WDTE" option="OFF"/>
+            <setting name="PWRTE" option="OFF"/>
+            <setting name="MCLRE" option="ON"/>
+            <setting name="CP" option="OFF"/>
+            <setting name="CPD" option="OFF"/>
+            <setting name="BOREN" option="ON"/>
+            <setting name="CLKOUTEN" option="OFF"/>
+            <setting name="IESO" option="ON"/>
+            <setting name="FCMEN" option="ON"/>
+            <setting name="WRT" option="OFF"/>
+            <setting name="PLLEN" option="ON"/>
+            <setting name="STVREN" option="ON"/>
+            <setting name="BORV" option="LO"/>
+            <setting name="LVP" option="OFF"/>
+            <file checksum="14491739" modified="false" name="mcc.c" path="CM_Generated_Files/mcc.c"/>
+            <file checksum="1653771121" modified="false" name="mcc.h" path="CM_Generated_Files/mcc.h"/>
+        </manager>
+        <manager name="Pin Manager">
+            <file checksum="104927003" modified="false" name="pin_manager.c" path="CM_Generated_Files/pin_manager.c"/>
+            <file checksum="2967149533" modified="false" name="pin_manager.h" path="CM_Generated_Files/pin_manager.h"/>
+        </manager>
+        <manager name="Interrupt Manager">
+            <interrupt module="MSSP" name="SSPI"/>
+            <interrupt module="MSSP" name="BCLI"/>
+            <file checksum="3888866510" modified="false" name="interrupt_manager.c" path="CM_Generated_Files/interrupt_manager.c"/>
+            <file checksum="3374786843" modified="false" name="interrupt_manager.h" path="CM_Generated_Files/interrupt_manager.h"/>
+        </manager>
+    </managers>
+    <modules>
+        <module mode="GPIO" name="GPIO" type="GPIO"/>
+        <module mode="EUSART Asynchronous(NRZ)" name="EUSART" type="uart_autobd">
+            <initializer comment="" name="InitializerDefault">
+                <setting name="ABDEN" option="enabled"/>
+                <setting name="WUE" option="disabled"/>
+                <setting name="RCIDL" option="idle"/>
+                <setting name="ABDOVF" option="no_overflow"/>
+                <setting name="SCKP" option="async_noninverted_sync_fallingedge"/>
+                <setting name="BRG16" option="16bit_generator"/>
+                <setting name="ADDEN" option="disabled"/>
+                <setting name="RX9" option="8-bit"/>
+                <setting name="RX9D" option="0x0"/>
+                <setting name="FERR" option="no_error"/>
+                <setting name="CREN" option="disabled"/>
+                <setting name="SPEN" option="enabled"/>
+                <setting name="SREN" option="disabled"/>
+                <setting name="OERR" option="no_error"/>
+                <setting name="SPBRGL" option="51"/>
+                <setting name="SPBRGH" option="0"/>
+                <setting name="TXREG" option="0x0"/>
+                <setting name="RCREG" option="0x0"/>
+                <setting name="CSRC" option="slave_mode"/>
+                <setting name="TRMT" option="TSR_empty"/>
+                <setting name="TXEN" option="enabled"/>
+                <setting name="BRGH" option="hi_speed"/>
+                <setting name="SYNC" option="asynchronous"/>
+                <setting name="SENDB" option="sync_break_complete"/>
+                <setting name="TX9D" option="0x0"/>
+                <setting name="TX9" option="8-bit"/>
+                <additionalSetting name="baudrateString" option="2400"/>
+            </initializer>
+            <initializer comment="" name="InitializerNew">
+                <setting name="ABDEN" option="disabled"/>
+                <setting name="WUE" option="disabled"/>
+                <setting name="RCIDL" option="idle"/>
+                <setting name="ABDOVF" option="no_overflow"/>
+                <setting name="SCKP" option="async_noninverted_sync_fallingedge"/>
+                <setting name="BRG16" option="16bit_generator"/>
+                <setting name="ADDEN" option="disabled"/>
+                <setting name="RX9" option="8-bit"/>
+                <setting name="RX9D" option="0x0"/>
+                <setting name="FERR" option="no_error"/>
+                <setting name="CREN" option="disabled"/>
+                <setting name="SPEN" option="disabled"/>
+                <setting name="SREN" option="disabled"/>
+                <setting name="OERR" option="no_error"/>
+                <setting name="SPBRGL" option="12"/>
+                <setting name="SPBRGH" option="0"/>
+                <setting name="TXREG" option="0x0"/>
+                <setting name="RCREG" option="0x0"/>
+                <setting name="CSRC" option="slave_mode"/>
+                <setting name="TRMT" option="TSR_empty"/>
+                <setting name="TXEN" option="disabled"/>
+                <setting name="BRGH" option="hi_speed"/>
+                <setting name="SYNC" option="asynchronous"/>
+                <setting name="SENDB" option="sync_break_complete"/>
+                <setting name="TX9D" option="0x0"/>
+                <setting name="TX9" option="8-bit"/>
+                <additionalSetting name="baudrateString" option="9600"/>
+            </initializer>
+            <setting name="RCI" option="false"/>
+            <setting name="TXI" option="false"/>
+            <setting name="inputBuffer" option="8"/>
+            <setting name="outputBuffer" option="8"/>
+            <setting name="stdio" option="false"/>
+            <file checksum="1346316165" modified="false" name="eusart.c" path="CM_Generated_Files/eusart.c"/>
+            <file checksum="872275040" modified="false" name="eusart.h" path="CM_Generated_Files/eusart.h"/>
+        </module>
+        <module mode="Timer" name="TMR0" type="tmr_0">
+            <initializer comment="" name="InitializerDefault">
+                <setting name="TMR0CS" option="T0CKl"/>
+                <setting name="TMR0SE" option="Increment_hi_lo"/>
+                <setting name="PS" option="1:256"/>
+                <setting name="PSA" option="not_assigned"/>
+                <setting name="INTEDG" option="rising"/>
+                <setting name="nWPUEN" option="disabled"/>
+                <setting name="TMR0" option="0"/>
+                <additionalSetting name="maxPeriodChanged" option="2.56 ms"/>
+                <additionalSetting name="minPeriodChanged" option="2.56 ms"/>
+                <additionalSetting name="period" option="2.56 ms"/>
+                <additionalSetting name="extfreq" option="100 kHz"/>
+            </initializer>
+            <setting name="TMRI" option="false"/>
+            <setting name="ticker" option="1"/>
+            <file checksum="3462625223" modified="false" name="tmr0.c" path="CM_Generated_Files/tmr0.c"/>
+            <file checksum="418230977" modified="false" name="tmr0.h" path="CM_Generated_Files/tmr0.h"/>
+        </module>
+        <module mode="Timer" name="TMR1" type="tmr_mid1">
+            <initializer comment="" name="InitializerDefault">
+                <setting name="T1OSCEN" option="disabled"/>
+                <setting name="nT1SYNC" option="synchronize"/>
+                <setting name="T1CKPS" option="1:8"/>
+                <setting name="TMR1CS" option="FOSC/4"/>
+                <setting name="TMR1ON" option="disabled"/>
+                <setting name="T1GSPM" option="disabled"/>
+                <setting name="T1GSS" option="T1G"/>
+                <setting name="T1GTM" option="disabled"/>
+                <setting name="T1GPOL" option="low"/>
+                <setting name="TMR1GE" option="disabled"/>
+                <setting name="T1GGO" option="done"/>
+                <setting name="TMR1H" option="0"/>
+                <setting name="TMR1L" option="0"/>
+                <additionalSetting name="externalFreq" option=""/>
+            </initializer>
+            <setting name="TMRI" option="false"/>
+            <setting name="ticker" option="0"/>
+            <file checksum="1436223128" modified="false" name="tmr1.c" path="CM_Generated_Files/tmr1.c"/>
+            <file checksum="628994138" modified="false" name="tmr1.h" path="CM_Generated_Files/tmr1.h"/>
+        </module>
+        <module mode="Memory" name="MEMORY" type="nvm">
+            <setting name="useEE" option="true"/>
+            <file checksum="2384402633" modified="false" name="memory.c" path="CM_Generated_Files/memory.c"/>
+            <file checksum="3771404599" modified="false" name="memory.h" path="CM_Generated_Files/memory.h"/>
+        </module>
+        <module mode="I2C Master Interrupt" name="MSSP" type="mssp">
+            <initializer comment="" name="InitializerDefault">
+                <setting name="BF" option="RCinprocess_TXcomplete"/>
+                <setting name="UA" option="dontupdate"/>
+                <setting name="SMP" option="midsample_enable"/>
+                <setting name="P" option="stopbit_notdetected"/>
+                <setting name="S" option="startbit_notdetected"/>
+                <setting name="R_nW" option="write_noTX"/>
+                <setting name="CKE" option="tx_on_idle_to_active"/>
+                <setting name="D_nA" option="lastbyte_address"/>
+                <setting name="SSPEN" option="disabled"/>
+                <setting name="WCOL" option="no_collision"/>
+                <setting name="SSPOV" option="no_overflow"/>
+                <setting name="CKP" option="lo_hold"/>
+                <setting name="SSPM" option="I2CMaster_FOSC/4_SSPxADD"/>
+                <setting name="ACKSTAT" option="received"/>
+                <setting name="RCEN" option="disabled"/>
+                <setting name="RSEN" option="disabled"/>
+                <setting name="ACKEN" option="disabled"/>
+                <setting name="SEN" option="disabled"/>
+                <setting name="ACKDT" option="acknowledge"/>
+                <setting name="GCEN" option="disabled"/>
+                <setting name="PEN" option="disabled"/>
+                <setting name="BOEN" option="disabled"/>
+                <setting name="AHEN" option="disabled"/>
+                <setting name="SBCDE" option="disabled"/>
+                <setting name="SDAHT" option="100nshold"/>
+                <setting name="DHEN" option="disabled"/>
+                <setting name="ACKTIM" option="ackseq"/>
+                <setting name="PCIE" option="disabled"/>
+                <setting name="SCIE" option="disabled"/>
+                <setting name="SSPBUF" option="0x0"/>
+                <setting name="SSPMSK" option="0x0"/>
+                <setting name="SSPADD" option="255"/>
+                <additionalSetting name="SSPADD" option="15"/>
+                <additionalSetting name="clock" option="7.8125 kHz"/>
+                <additionalSetting name="clockfrequency" option="7.8125 kHz"/>
+            </initializer>
+            <file checksum="1222522285" modified="false" name="i2c.c" path="CM_Generated_Files/i2c.c"/>
+            <file checksum="3567881299" modified="false" name="i2c.h" path="CM_Generated_Files/i2c.h"/>
+        </module>
+        <module mode="ADC" name="ADC" type="adc_sarcore_10bit">
+            <initializer comment="" name="InitializerDefault">
+                <setting name="GO_nDONE" option="stop"/>
+                <setting name="ADON" option="enabled"/>
+                <setting name="CHS" option="AN0"/>
+                <setting name="ADPREF" option="chip_VDD"/>
+                <setting name="ADNREF" option="chip_VSS"/>
+                <setting name="ADFM" option="left"/>
+                <setting name="ADCS" option="FOSC/16"/>
+                <setting name="ADRESL" option="0x0"/>
+                <setting name="ADRESH" option="0x0"/>
+            </initializer>
+            <setting name="ADI" option="false"/>
+            <resource customName="channel_AN0" name="RA0" type="pin"/>
+            <resource customName="channel_AN1" name="RA1" type="pin"/>
+            <resource customName="channel_AN2" name="RA2" type="pin"/>
+            <resource customName="channel_AN3" name="RA4" type="pin"/>
+            <file checksum="3593007166" modified="false" name="adc.c" path="CM_Generated_Files/adc.c"/>
+            <file checksum="3613392280" modified="false" name="adc.h" path="CM_Generated_Files/adc.h"/>
+        </module>
+    </modules>
+</configuration>
