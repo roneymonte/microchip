@@ -1,0 +1,4 @@
+Temporario
+=
+
+area temporaria
