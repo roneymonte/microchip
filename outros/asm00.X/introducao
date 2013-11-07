@@ -1,0 +1,34 @@
+;
+;
+;
+
+list P=16F887
+include "C:\Program Files\Microchip\MPLABX\mpasmx\P16F887.INC"
+
+porta   equ 05
+portb   equ 06
+(portc  equ 07)
+
+        org 1FFh
+        goto Start
+        org 0
+;
+;
+
+Init    clrf    porta   ;
+        clrf    portb   ;
+        (clrf   portc)
+        movlw   b'xxxx' ;
+        tris    porta   ;
+        movlw   b'xxxxxxxx'
+        tris    portb
+        (movlw  b'xxxxxxxx'
+        tris    portc)
+        retlw   0
+
+;
+;
+Start
+    call Init
+Main
+    END

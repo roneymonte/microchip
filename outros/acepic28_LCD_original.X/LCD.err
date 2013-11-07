@@ -1,0 +1,4 @@
+Warning[2066] LCD.c 83 : type qualifier mismatch in assignment
+Warning[2066] LCD.c 88 : type qualifier mismatch in assignment
+Warning[2066] LCD.c 95 : type qualifier mismatch in assignment
+Warning[2066] LCD.c 99 : type qualifier mismatch in assignment

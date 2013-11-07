@@ -1,0 +1,5 @@
+_main: CODE, 2000 0 48
+__initialization: CODE, 1954 0 0
+_pause: CODE, 1973 0 27
+_msecbase: CODE, 1958 0 15
+Total: 90
