@@ -2,7 +2,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>02_serialcomm</name>
+            <name>03_seriamComm</name>
             <creation-uuid>f3b215b4-e017-43e2-b00b-05a17d5f73f1</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>

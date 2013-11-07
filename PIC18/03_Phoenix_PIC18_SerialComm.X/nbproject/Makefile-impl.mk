@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=02_serialcomm
+PROJECTNAME=03_Phoenix_PIC18_SerialComm.X
 
 # Active Configuration
 DEFAULTCONF=default
