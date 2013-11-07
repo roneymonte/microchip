@@ -1,0 +1,91 @@
+10
+
+dir
+0
+https://github.com/roneymonte/microchip/02_serialcomm/nbproject
+https://github.com/roneymonte/microchip
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
+
+
+
+
+
+
+
+
+
+
+
+2aadc393-5fb4-60f1-c871-ce57b7db7bff
+
+Makefile-variables.mk
+file
+
+
+
+add
+
+Package-default.bash
+file
+
+
+
+add
+
+configurations.xml
+file
+
+
+
+add
+
+Makefile-local-default.mk
+file
+
+
+
+add
+
+project.properties
+file
+
+
+
+add
+
+Makefile-impl.mk
+file
+
+
+
+add
+
+Makefile-genesis.properties
+file
+
+
+
+add
+
+Makefile-default.mk
+file
+
+
+
+add
+
+project.xml
+file
+
+
+
+add
+
