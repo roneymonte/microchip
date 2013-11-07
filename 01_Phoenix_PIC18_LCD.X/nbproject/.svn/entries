@@ -1,91 +1,0 @@
-10
-
-dir
-0
-https://github.com/roneymonte/microchip/nbproject
-https://github.com/roneymonte/microchip
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-
-
-
-
-
-
-
-
-
-
-
-334a6195-1b44-d8a7-b8d5-ce57b7db7bff
-
-Makefile-default.mk
-file
-
-
-
-add
-
-project.xml
-file
-
-
-
-add
-
-Makefile-variables.mk
-file
-
-
-
-add
-
-Package-default.bash
-file
-
-
-
-add
-
-configurations.xml
-file
-
-
-
-add
-
-Makefile-local-default.mk
-file
-
-
-
-add
-
-project.properties
-file
-
-
-
-add
-
-Makefile-impl.mk
-file
-
-
-
-add
-
-Makefile-genesis.properties
-file
-
-
-
-add
-
