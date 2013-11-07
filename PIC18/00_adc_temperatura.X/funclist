@@ -1,0 +1,27 @@
+_BusyXLCD: CODE, 6482 0 58
+__stringdata: SMALLCONST, 4096 0 13
+_Delay1KTCYx: CODE, 6676 0 14
+_main: CODE, 4110 0 800
+_DelayFor18TCY: CODE, 6690 0 14
+_WriteCmdXLCD: CODE, 6422 0 60
+___lmul: CODE, 5874 0 86
+__initialization: CODE, 6662 0 0
+_OpenXLCD: CODE, 5156 0 224
+___lwdiv: CODE, 5960 0 86
+_WriteDataXLCD: CODE, 6362 0 60
+___lldiv: CODE, 5544 0 134
+_SetDDRamAddr: CODE, 6132 0 86
+_Delay10TCYx: CODE, 6704 0 14
+_DelayPORXLCD: CODE, 6718 0 14
+_Delay100TCYx: CODE, 6732 0 14
+_Delay10KTCYx: CODE, 6640 0 22
+___lwmod: CODE, 6292 0 70
+___llmod: CODE, 5678 0 106
+_itoa: CODE, 6218 0 74
+_ltoa: CODE, 5784 0 90
+_ultoa: CODE, 4910 0 246
+_putrsXLCD: CODE, 6046 0 86
+_utoa: CODE, 5380 0 164
+_initLCD: CODE, 6590 0 50
+_piscarC: CODE, 6540 0 50
+Total: 2635
