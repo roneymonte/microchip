@@ -1,0 +1,104 @@
+10
+
+dir
+5
+https://github.com/roneymonte/microchip
+https://github.com/roneymonte/microchip
+
+
+
+2013-11-01T22:51:28.000000Z
+5
+roneymonte
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+334a6195-1b44-d8a7-b8d5-ce57b7db7bff
+
+funclist
+file
+0
+
+
+add
+
+Makefile
+file
+0
+
+
+add
+
+build
+dir
+
+
+
+add
+
+01_LCD
+dir
+
+
+
+add
+
+teste.txt
+file
+0
+
+
+add
+
+trunk
+dir
+
+dist
+dir
+
+
+
+add
+
+l.obj
+file
+0
+
+
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
+branches
+dir
+
+main.c
+file
+0
+
+
+add
+
+nbproject
+dir
+
+
+
+add
+
