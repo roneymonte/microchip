@@ -1,0 +1,15 @@
+_i2c_start: CODE, 1463 0 9
+_init_micro: CODE, 1472 0 10
+_i2c_repStart: CODE, 1454 0 9
+_main: CODE, 1775 0 273
+_i2c_waitForIdle: CODE, 1571 0 48
+__initialization: CODE, 1441 0 0
+_i2c_write: CODE, 1482 0 12
+_pause: CODE, 1619 0 49
+_i2c_stop: CODE, 1445 0 9
+_i2c_read: CODE, 1668 0 52
+_I2C_EEIN: CODE, 1720 0 55
+_i2c_init: CODE, 1509 0 19
+_msecbase: CODE, 1494 0 15
+_I2C_EEOUT: CODE, 1528 0 43
+Total: 603
