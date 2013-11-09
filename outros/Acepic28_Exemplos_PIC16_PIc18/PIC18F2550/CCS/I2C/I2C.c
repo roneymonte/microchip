@@ -1,0 +1,98 @@
+/*******************************************************************************
+*                        Kit de desenvolvimento ACEPIC 28                      *
+*                      ACEPIC Tecnologia e Treinamento LTDA                    *
+*                               www.acepic.com.br                              * 
+*                                                                              *
+*Objetivo: Programa de demonstração para armazenamento de dados na memória     *
+*          EEPROM externa através do protocolo I2C e informações enviadas      *
+*          pela serial.                                                        *
+*          Quando resetada a placa, o usuário é solicitado a pressionar a      * 
+*          chave B1 para armazenar, nos endereços 0 a 5 da memória EEPROM      *
+*          externa (24C04) os caracteres formando a palavra ACEPIC ou a chave  *
+*          B2 para fazer a leitura dos endereços 0 a 5 da memória.             *
+*Obs.: Ligar as chaves 1 (RB1-SCL) e 3 (RB0-SDA) do DIP 1 e chaves 7 (RA6-OSC1)*
+*      e 8 (RA7-OSC2) do DIP2.                                                 *
+*******************************************************************************/
+#include <18F2550.h>
+#use delay (clock=8000000)    /*Definição da frequência do cristal para cálculo 
+                                ..dos delays*/
+#fuses HS, NOWDT, PUT, BROWNOUT, NOLVP, CPUDIV1 
+//Definições para a comunicação serial
+#use RS232 (Baud=19200, xmit = PIN_C6, rcv = PIN_C7)
+
+//Derfinições para o protocolo I2C
+#use i2c(master, sda=PIN_B0, scl=PIN_B1)
+
+//Função para envio de dados para um endereço da memória EEPROM por I2C
+void esc_ext_eeprom(long int end, int dado) //end = 1 dado = 'C'
+{
+I2C_start();            //Envia uma condição de 'start' ao barramento I2C  
+I2C_Write(0xA0);        // 0b1010 000 0 Identifica dispositivo para escrita
+I2C_Write(end);         //Identifica endereço na memória
+I2C_Write(dado);        //Envia o dado a ser gravado
+I2C_Stop();             //Envia uma condição de 'stop' ao barramento I2C
+delay_ms(5);            //Atraso de 5ms
+}
+
+//Função para leitura de um dado por I2C num endereço da memória EEPROM externa  
+int le_ext_eeprom(long int end) // end = 0
+{
+int leitura;
+I2C_Start();                    //Envia uma condição de 'start' ao barramento I2C  
+I2C_Write(0xA0);      //Identifica dispositivo para escrita
+I2C_Write(end);       //Identifica endereço na memória
+I2C_Start();              //Condição de Restart
+I2C_Write(0xA1);          //0b 1010 000 1 Identifica dispositivo para leitura
+leitura = I2C_Read(0);        //Faz a leitura do dado (NO acknowledge)
+I2C_Stop();                     //Envia uma condição de 'stop' ao barramento I2C
+delay_ms(5);         //Atraso de 5ms
+return leitura;         //retorna leitura
+}
+
+void main()
+{
+//Envia a string pela serial e muda o cursor para a próxima linha
+printf("Microcontroladores PIC 18F2550.\r\n");
+
+//Envia a string pela serial e muda o cursor para a próxima linha
+printf("Utilizando o protocolo I2C...\r\n");
+
+//Envia a string pela serial e muda o cursor para a próxima linha
+printf("Pressione B1 para gravar e B2 para ver.\r\n");
+
+while(true)
+   {
+   if (input(PIN_A2))        //Se o botão B0 for pressionado
+      {
+      //Envia a string pela serial e muda o cursor para a próxima linha
+      printf("Gravando na memoria EEPROM externa...\r\n");
+
+      esc_ext_eeprom(0,'A');     //Escreve no endereço 0 da memória o caractere 'A'
+      esc_ext_eeprom(1,'C');     //Escreve no endereço 1 da memória o caractere 'C'
+      esc_ext_eeprom(2,'E');     //Escreve no endereço 2 da memória o caractere 'E'
+      esc_ext_eeprom(3,'P');     //Escreve no endereço 3 da memória o caractere 'P'
+      esc_ext_eeprom(4,'I');     //Escreve no endereço 4 da memória o caractere 'I'
+      esc_ext_eeprom(5,'C');     //Escreve no endereço 5 da memória o caractere 'C'
+
+      delay_ms(500);          //Atraso de 500ms
+
+      //Envia a string pela serial e muda o cursor para a próxima linha
+      printf("Pressione B2 para ver.\r\n");
+      }
+   
+   if (input(PIN_A4))         //Se o botão B1 for pressionado
+      {
+      /*Envia as strings pela serial formatadas com os valores lido dos enderecos
+        0 até 5 da memória EEPROM externa*/
+      printf("Endereco 00 da memoria: %c\r\n",le_ext_eeprom(0));
+      printf("Endereco 01 da memoria: %c\r\n",le_ext_eeprom(1));
+      printf("Endereco 02 da memoria: %c\r\n",le_ext_eeprom(2));
+      printf("Endereco 03 da memoria: %c\r\n",le_ext_eeprom(3));
+      printf("Endereco 04 da memoria: %c\r\n",le_ext_eeprom(4));
+      printf("Endereco 05 da memoria: %c\r\n",le_ext_eeprom(5));
+      delay_ms(500);          //Atraso de 500ms
+      
+      printf("Pressione B1 para gravar e B2 para ver.\r\n");
+      }
+   }
+}

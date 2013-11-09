@@ -1,0 +1,55 @@
+
+ROM used: 783 (10%)
+          783 (10%) including unused fragments
+
+          2 Average locations per line
+          37 Average locations per statement
+
+RAM used: 8 (2%) at main() level
+          8 (2%) worst case
+
+Stack used: 1 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   56    21 100  EEPROM.c
+  277     0   0  C:\Program Files\PICC\devices\16F876A.h
+----- -----
+  333    21 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     20   3   1             @delay_ms1
+0    450  57   2   696  2.8  main
+0     38   5   0   330  5.1  @const61
+0     29   4   0   696  2.8  @const62
+0     29   4   0             @const63
+0     35   4   0             @const64
+0     35   4   0             @const65
+0     35   4   0             @const66
+0     35   4   0             @const67
+0     38   5   0             @const68
+0     35   4   0             @const69
+
+Program metrics:
+    Functions               3
+    Statements              21
+    Comments                108
+    Volume (V)              2193
+    Difficilty (D)          10.3
+    Effort to implement (E) 22583
+    Time to implement (T)   21 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   3
+    Maintainability (MI)    111
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF   779  1265  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01FFF     0  2048  
+
+
+

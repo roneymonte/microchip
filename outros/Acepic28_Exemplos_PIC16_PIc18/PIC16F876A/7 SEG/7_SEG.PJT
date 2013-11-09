@@ -1,0 +1,40 @@
+[PROJECT]
+Target=7_SEG.HEX
+Development_Mode=2
+Processor=0x876A
+Processor_Text=PIC16F876A
+ToolSuite=CCS
+
+[Directories]
+Include=
+Library=
+LinkerScript=
+
+[Target Data]
+FileList=G:\ACEPIC\CDS Kits ACEPIC\CD ACEPIC 18_28\ACEPIC 18_28\Exemplos\Linguagem C\PIC16F876A\7 SEG\7_SEG.c
+BuildTool=C-COMPILER
+OptionString=+FM
+AdditionalOptionString=
+BuildRequired=1
+
+[7_SEG.c]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+
+[mru-list]
+1=7_SEG.c
+
+[Windows]
+0=0000 7_SEG.c 0 0 796 451 3 0
+
+[Opened Files]
+1=E:\ACEPIC\CDS Kits ACEPIC\ACEPIC 28\PIC16F876A\7 SEG\7_SEG.c
+2=
+3=
+[Units]
+Count=1
+1=7_SEG (main)

@@ -1,0 +1,46 @@
+
+ROM used: 88 (1%)
+          88 (1%) including unused fragments
+
+          0 Average locations per line
+          4 Average locations per statement
+
+RAM used: 7 (2%) at main() level
+          8 (2%) worst case
+
+Stack used: 1 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   64    22 100  botoes.c
+  277     0   0  C:\Program Files\PICC\devices\16F876A.h
+----- -----
+  341    22 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     20  23   1             @delay_ms1
+0     64  73   1   415  2.4  main
+
+Program metrics:
+    Functions               1
+    Statements              22
+    Comments                90
+    Volume (V)              418
+    Difficilty (D)          2.3
+    Effort to implement (E) 958
+    Time to implement (T)   1 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   4
+    Maintainability (MI)    131
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF    84  1960  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01FFF     0  2048  
+
+
+

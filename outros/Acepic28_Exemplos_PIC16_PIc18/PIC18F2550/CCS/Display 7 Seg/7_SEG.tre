@@ -1,0 +1,13 @@
+ÀÄ7_SEG
+   ÃÄMAIN  0/496  Ram=8
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄ??0??
+   ³  ÃÄ@MUL3232  0/86  Ram=14
+   ³  ÃÄ@DIV3232  0/142  Ram=13
+   ³  ÃÄ@DIV3232  0/142  Ram=13
+   ³  ÃÄ@DIV3232  0/142  Ram=13
+   ³  ÃÄ@DIV3232  0/142  Ram=13
+   ³  ÃÄ@DIV3232  0/142  Ram=13
+   ³  ÃÄ@DIV3232  0/142  Ram=13
+   ³  ÀÄ@delay_ms1  0/40  Ram=1
+   ÀÄtrata_t0  0/132  Ram=1

@@ -1,0 +1,85 @@
+/*******************************************************************************
+*                        Kit de desenvolvimento ACEPIC 28                      *
+*                      ACEPIC Tecnologia e Treinamento LTDA                    *
+*                               www.acepic.com.br                              * 
+*                                                                              *
+*Objetivo: Leitura dos canais analógicos AN0 (trimpot ADC1 - 0 a 5V) e AN2     *
+*          (trimpot ADC2 - 0 a 5V) e envio do dados à porta serial.            *
+*Obs.: Ligar as chaves 1(ADC1) e 2 (ADC2) do DIP1 e chaves 7 (RA6-OSC1) e      *
+*      8 (RA7-OSC2) do DIP2                                                    *
+*******************************************************************************/
+#include <18F2550.h>
+
+#device ADC = 10              //Define 10 bits para o resultado da conversão AD
+#use delay (clock=8000000)    /*Definição da frequência do cristal para cálculo 
+                                ..dos delays*/
+#fuses HS, NOWDT, PUT, BROWNOUT, NOLVP, CPUDIV1 
+//Definições para a comunicação serial
+#use RS232 (Baud=19200, xmit = PIN_C6, rcv = PIN_C7)
+
+char rec[4];            //Variável que receberá os caracteres vindos da serial
+int i=0;               //Variável de controle para contagem dos caracteres
+int32 ad;
+
+void msg_inicial()
+{
+printf("Kit de Desenvolvimento ACEPIC 28\r\n");
+printf("Microcontrolador: PIC 18F2550\r\n");
+printf("\r\n-Envie AD0 para retornar Conversao A/D do Canal 0\r\n");
+printf("-Envie AD1 para retornar Conversao A/D do Canal 1\r\n\r\n");
+}
+
+
+void trata_serial()
+{
+if ((rec[0]=='A') && (rec[1] == 'D') && (rec[2] == '0'))
+   {
+    SET_ADC_CHANNEL(0);
+   
+    OUTPUT_BIT(PIN_B7,1);
+    delay_ms(100);   
+    ad =    READ_ADC();
+    ad = (ad * 5000)/1023;
+    OUTPUT_BIT(PIN_B7,0);
+    printf("AN0 = %lu mV\r\n\r\n",ad);
+   }  
+   
+if ((rec[0]=='A') && (rec[1] == 'D') && (rec[2] == '1'))
+   {
+    SET_ADC_CHANNEL(1);
+      
+    OUTPUT_BIT(PIN_B7,1);
+    delay_ms(100);   
+    ad =    READ_ADC();
+    ad = (ad * 5000)/1023;
+    OUTPUT_BIT(PIN_B7,0);
+    printf("AN1 = %lu mV\r\n\r\n",ad);
+   }     
+
+}
+
+void main()
+{
+SETUP_ADC_PORTS(AN0_TO_AN1);       //Configurada a entrada analógica, somente a entrada RA0
+SETUP_ADC(ADC_CLOCK_INTERNAL);    //Configurado o conversor AD interno   
+
+delay_us(10);
+
+msg_inicial();
+
+while(true)
+   {
+   rec[i] = getc();        /*Espera o caractere e quando deste, coloca na matriz rec na 
+                           posição i*/   
+   printf("%c",rec[i]);    //Retorna o caractere pela serial
+   i++;                    //Incrementa a variável de controle
+   if (rec[i-1] == 0x0d)   //Verifica 1 posição na matriz anterior à variável i
+      {                    //Se o caractere recebido for equivalente ao ‘enter’
+       printf("\r\n");
+       trata_serial();     //chama a função trata_serial()
+       i=0;                //zera a variável i
+       msg_inicial();
+      } 
+   }  
+   
+}

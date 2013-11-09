@@ -1,0 +1,45 @@
+
+ROM used: 43 (1%)
+          43 (1%) including unused fragments
+
+          0 Average locations per line
+          4 Average locations per statement
+
+RAM used: 7 (2%) at main() level
+          7 (2%) worst case
+
+Stack used: 0 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   45    10 100  int_t1.c
+  274     0   0  C:\Arquivos de programas\PICC\devices\16F876A.h
+----- -----
+  319    10 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     39  91   0   183  3.6  main
+
+Program metrics:
+    Functions               1
+    Statements              10
+    Comments                104
+    Volume (V)              183
+    Difficilty (D)          3.6
+    Effort to implement (E) 652
+    Time to implement (T)   1 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   1
+    Maintainability (MI)    102
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF    39  2005  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01FFF     0  2048  
+
+
+

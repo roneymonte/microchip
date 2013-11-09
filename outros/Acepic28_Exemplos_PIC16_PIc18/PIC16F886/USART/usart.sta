@@ -1,0 +1,45 @@
+
+ROM used: 45 (1%)
+          45 (1%) including unused fragments
+
+          0 Average locations per line
+          15 Average locations per statement
+
+RAM used: 7 (2%) at main() level
+          7 (2%) worst case
+
+Stack used: 0 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   23     3 100  usart.c
+  395     0   0  C:\Arquivos de programas\PICC\devices\16F886.h
+----- -----
+  418     3 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     41  91   1    47  1.4  main
+
+Program metrics:
+    Functions               1
+    Statements              3
+    Comments                101
+    Volume (V)              47
+    Difficilty (D)          1.4
+    Effort to implement (E) 67
+    Time to implement (T)   0 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   1
+    Maintainability (MI)    140
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF    41  2003  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01FFF     0  2048  
+
+
+

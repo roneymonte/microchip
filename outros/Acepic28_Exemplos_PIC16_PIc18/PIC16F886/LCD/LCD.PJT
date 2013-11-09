@@ -1,0 +1,41 @@
+[PROJECT]
+Target=LCD.HEX
+Development_Mode=2
+Processor=0x886F
+Processor_Text=PIC16F886
+ToolSuite=CCS
+
+[Directories]
+Include=
+Library=
+LinkerScript=
+
+[Target Data]
+FileList=D:\CDS Kits ACEPIC\CD ACEPIC 18_28\PIC16F886\LCD\LCD.c
+BuildTool=C-COMPILER
+OptionString=+FM
+AdditionalOptionString=
+BuildRequired=1
+
+[LCD.c]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+
+[mru-list]
+1=LCD.c
+
+[Windows]
+0=0000 LCD.c 0 0 796 451 3 0
+
+[Opened Files]
+1=LCD.c
+2=
+3=..\..\..\CD ACEPIC 40 V2.0\PIC 16F877A\CCS\LCD\LCD8B.c
+4=
+[Units]
+Count=1
+1=LCD.c (main)

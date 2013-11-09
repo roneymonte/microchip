@@ -1,0 +1,41 @@
+[PROJECT]
+Target=int_ext.HEX
+Development_Mode=2
+Processor=0x876A
+Processor_Text=PIC16F876A
+ToolSuite=CCS
+
+[Directories]
+Include=
+Library=
+LinkerScript=
+
+[Target Data]
+FileList=D:\CDs Kits ACEPIC\CD ACEPIC 18_28\ACEPIC 18_28\Exemplos\Linguagem C\PIC16F876A\INT_EXT\int_ext.c
+BuildTool=C-COMPILER
+OptionString=+FM
+AdditionalOptionString=
+BuildRequired=1
+
+[int_ext.c]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+
+[mru-list]
+1=int_ext.c
+
+[Windows]
+0=0000 int_ext.c 0 0 796 451 3 0
+
+[Opened Files]
+1=int_ext.c
+2=
+3=..\INT_T0\int_t0.c
+4=
+[Units]
+Count=1
+1=int_ext.c (main)

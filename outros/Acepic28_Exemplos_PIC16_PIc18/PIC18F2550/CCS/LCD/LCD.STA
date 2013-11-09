@@ -1,0 +1,58 @@
+
+ROM used: 632 (2%)
+          632 (2%) including unused fragments
+
+          1 Average locations per line
+          8 Average locations per statement
+
+RAM used: 5 (0%) at main() level
+          15 (1%) worst case
+
+Stack used: 5 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   33    12  14  LCD.c
+  412     0   0  C:\Program Files\PICC\devices\18F2550.h
+  156    72  86  LCD_4B.c
+----- -----
+  601    84 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     38   3   1             @delay_ms1
+0     20   2   0             @const65
+0     58   5   1   260  1.9  lcd_envia_nibble
+0     56   4   3   176  2.7  lcd_envia_byte
+0     92   7   2   433  4.3  lcd_ini
+0     36   3   4   186  5.5  lcd_pos_xy
+0     72   6   1   290  4.1  lcd_escreve
+0    120   9   1   303  2.3  MAIN
+0     16   1   0             @const90
+0     32   3   2             @PSTRINGC_81
+0     18   1   0             @const92
+0     18   1   0             @const94
+0     18   1   0             @const95
+0     16   1   0             @const96
+0     18   1   0             @const97
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               6
+    Statements              84
+    Comments                160
+    Volume (V)              2491
+    Difficulty (D)          19.3
+    Effort to implement (E) 47984
+    Time to implement (T)   44 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   8
+    Maintainability (MI)    146
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-07FFE   628  32136  
+
+
+

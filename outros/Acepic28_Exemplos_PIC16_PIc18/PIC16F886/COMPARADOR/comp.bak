@@ -1,0 +1,25 @@
+#include   <16F628A.h>            //microcontrolador utilizado
+#fuses intrc_io,nowdt,nolvp,nobrownout,put,mclr
+#use delay(clock=4000000)          // Define o clock do sistema
+#define LED         PIN_B3         // Define a saída para o led   
+
+void Inicializa(void);               // Prototipagem da função de Inicialização
+
+void main(void)
+{
+   
+   Inicializa();
+   Output_B(0X00);
+
+   while(true)                  // Entra em loop infinito
+      {
+         if (C2OUT) {output_high(LED);} // Se V2 > V1 liga o led
+            else    {output_low(LED);} // senão apaga o led
+      }
+}      
+
+void Inicializa(void)
+{
+   setup_comparator(NC_NC_A1_A2);   // Configura RA.1 e RA.2 como entradas
+                           // para o comparador
+}   

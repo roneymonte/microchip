@@ -1,0 +1,53 @@
+
+ROM used: 1084 (3%)
+          1084 (3%) including unused fragments
+
+          2 Average locations per line
+          36 Average locations per statement
+
+RAM used: 15 (1%) at main() level
+          38 (2%) worst case
+
+Stack used: 3 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   76    30 100  controle.c
+  412     0   0  C:\Program Files (x86)\PICC\devices\18F2550.h
+----- -----
+  488    30 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     38   2   1             @delay_ms1
+0    412  19   4   785  5.2  trata_serial
+0     84   4  14             @MUL3232
+0    142   7  13             @DIV3232
+0     18   1   0             @const79
+0     32   1   3             @PSTRINGCN_19200_31766_31767
+0    166   8  12             @PRINTF_L32U_19200_31766_31767
+0     18   1   0             @const84
+0    130   6   2   247  4.3  MAIN
+0      4   0   0             @const88
+0     36   2   2             @PSTRINGC_19200_31766_31767
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               2
+    Statements              30
+    Comments                133
+    Volume (V)              1207
+    Difficulty (D)          8.7
+    Effort to implement (E) 10471
+    Time to implement (T)   10 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   3
+    Maintainability (MI)    97
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-07FFE  1080  31684  
+
+
+

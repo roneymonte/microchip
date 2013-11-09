@@ -1,0 +1,57 @@
+
+ROM used: 1332 (4%)
+          1332 (4%) including unused fragments
+
+          3 Average locations per line
+          36 Average locations per statement
+
+RAM used: 15 (1%) at main() level
+          38 (2%) worst case
+
+Stack used: 3 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   87    37 100  usart_rx_tx.c
+  412     0   0  C:\Program Files\PICC\devices\18F2550.h
+----- -----
+  499    37 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     38   1   1             @delay_ms1
+0     42   2   0    67  1.2  msg_inicial
+0     36   1   0   260  1.9  @const73
+0     34   1   2   176  2.7  @PSTRINGC_19200_31766_31767
+0     32   1   0   433  4.3  @const75
+0     54   2   0   186  5.5  @const76
+0     54   2   0   290  4.1  @const77
+0    412  15   4   785  5.2  trata_serial
+0     84   3  14   626  4.7  @MUL3232
+0    142   5  13             @DIV3232
+0     18   1   0             @const85
+0     32   1   3             @PSTRINGCN_19200_31766_31767
+0    166   6  12             @PRINTF_L32U_19200_31766_31767
+0     18   1   0             @const90
+0    166   6   2   335  4.9  MAIN
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               9
+    Statements              37
+    Comments                135
+    Volume (V)              4904
+    Difficulty (D)          33.6
+    Effort to implement (E) 164825
+    Time to implement (T)   2 hours, 33 minutes
+    Est Delivered Bugs (B)  1
+    Cyclomatic Complexity   13
+    Maintainability (MI)    101
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-07FFE  1328  31436  
+
+
+
