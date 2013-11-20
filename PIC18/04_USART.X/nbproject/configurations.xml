@@ -20,6 +20,7 @@
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>README.md</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -116,6 +117,7 @@
         <property key="program-the-device-with-default-config-words" value="true"/>
       </HI-TECH-LINK>
       <PICkit2PlatformTool>
+        <property key="pk2settings.setvddvoltage" value="5.00"/>
       </PICkit2PlatformTool>
       <XC8-config-global>
         <property key="output-file-format" value="-mcof,+elf"/>

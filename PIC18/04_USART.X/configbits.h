@@ -24,6 +24,8 @@ extern "C" {
 
 // PIC18F2525 Configuration Bit Settings
 
+#include <xc.h>
+
 // #pragma config statements should precede project file includes.
 // Use project enums instead of #define for ON and OFF.
 
@@ -49,7 +51,7 @@ extern "C" {
 
 // CONFIG4L
 #pragma config STVREN = ON      // Stack Full/Underflow Reset Enable bit (Stack full/underflow will cause Reset)
-#pragma config LVP = ON         // Single-Supply ICSP Enable bit (Single-Supply ICSP enabled)
+#pragma config LVP = OFF        // Single-Supply ICSP Enable bit (Single-Supply ICSP enabled)
 #pragma config XINST = OFF      // Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode disabled (Legacy mode))
 
 // CONFIG5L
