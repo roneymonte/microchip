@@ -9,4 +9,4 @@ This program was created in order to show the hability to send and receive
 DATA trought the Serial Port to a PC running TTY emulator, and showing the
 characters in LCD, flashing LEDs to display status. XC8 Compiler.
 
-
+versao 0.1 updated in MPLABX 1.95 in Linux Ubuntu 13.10
