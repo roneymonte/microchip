@@ -1,0 +1,17 @@
+_BusyXLCD: CODE, 2694 0 58
+__stringdata: SMALLCONST, 2049 0 11
+_Delay1KTCYx: CODE, 2856 0 18
+_main: CODE, 2062 0 248
+_DelayFor18TCY: CODE, 2804 0 28
+_WriteCmdXLCD: CODE, 2630 0 64
+__initialization: CODE, 2892 0 0
+_OpenXLCD: CODE, 2310 0 166
+_WriteDataXLCD: CODE, 2566 0 64
+_SetDDRamAddr: CODE, 2476 0 90
+_Delay10TCYx: CODE, 2874 0 18
+_DelayPORXLCD: CODE, 2932 0 8
+_Delay10KTCYx: CODE, 2832 0 24
+_piscaVermelho: CODE, 2920 0 12
+_putrsXLCD: CODE, 2752 0 52
+_initLCD: CODE, 2906 0 14
+Total: 875
