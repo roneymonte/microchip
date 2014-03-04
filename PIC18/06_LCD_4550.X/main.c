@@ -1,16 +1,39 @@
+/*
+
+ * Monitor de Temperatura e Luminosidade
+ * (Duas Entradas Analogicas AN0 e AN1)
+ *
+ * VERSAO 1.0 = apenas o teste inicial de LCD
+ *
+ * por Roney Monte em 03-mar-2014
+ * VERSAO 1.1 = adicao do sensor LM35 e LDR com 10 bits de precisao (0 a 1023)
+ *
+ * Projeto idealizado com PIC18F4550
+ * rodando com cristal externo de 4mhz
+ *
+ * LCD de 20x4 colunas, conectado ao PORTB
+ * com biblioteca default da PLIB - PIC18
+ *
+ */
+
+
 #include <xc.h>
 #include <plib/delays.h>
 #include <plib/xlcd.h>
+#include <stdlib.h>
 
 #include "config_bits.h"
 
 #define _XTAL_FREQ 4000000
 
-#define LED1 PORTDbits.RD6
-#define LED2 PORTDbits.RD7
+#define LED1 PORTDbits.RD6  // simples LED para monitoramento
+#define LED2 PORTDbits.RD7  // simples LED para monitoramento
+#define LDR  PORTAbits.AN1  // Sensor LDR conectado ao pino AN1
+#define LM35 PORTAbits.AN0  // Sensor LM45 conectado ao pino AN0
 
 
  //////////////////////////////////////////////////////////////////
+// Pre-Definicao de Funcoes
 
 void DelayFor18TCY(void);
 void DelayPORXLCD(void);
@@ -33,7 +56,6 @@ void DelayFor18TCY(void)
 	Delay1TCY();
 	Delay1TCY();
 	Delay1TCY();
-
         Delay1TCY();
 	Delay1TCY();
 
@@ -52,6 +74,7 @@ void DelayFor18TCY(void)
   // Cycles = (TimeDelay * Fosc) / 4
   // Cycles = (15ms * 16MHz) / 4
   // Cycles = 60,000
+
  void DelayPORXLCD(void)   // minimum 15ms
  {
  //Delay100TCYx(0xA0);   // 100TCY * 160
@@ -65,7 +88,7 @@ void DelayFor18TCY(void)
  }
 
  /*
-  * 1 mhz = 1 milhao de hertz = 1 milhao ciclos/seg = 250 instrucoes / seg
+  * 1 mhz = 1 milhao de hertz = 1 milhao ciclos/seg = 250 mil instrucoes / seg
   * 
   */
 
@@ -79,11 +102,14 @@ void DelayFor18TCY(void)
        // Cycles = (TimeDelay * Fosc) / 4
        // Cycles = (5ms * 12MHz) / 4
        // Cycles = 5,000
-          //Delay1KTCYx(40);    //delay of 6ms
+ 
+        //Delay1KTCYx(40);    //delay of 6ms
+
            //Delay1KTCYx(20); // Delay of 5ms
            // Cycles = (TimeDelay * Fosc) / 4
            // Cycles = (5ms * 16MHz) / 4
            // Cycles = 20,000
+
  void DelayXLCD(void)     // minimum 5ms
  {
  //Delay100TCYx(0x36);      // 100TCY * 54
@@ -99,66 +125,22 @@ void DelayFor18TCY(void)
 {
      
         OpenXLCD(FOUR_BIT & LINES_5X7);
-
-        //OpenXLCD(FOUR_BIT);
-        
-        //SetDDRamAddr(0x00);
-        
-        //WriteDataXLCD('i');
-        
-        WriteCmdXLCD(DON & CURSOR_ON & BLINK_ON);
+        WriteCmdXLCD(DON & CURSOR_OFF & BLINK_OFF);
 
  }
 
  //////////////////////////////////////////////////////////////////
-/*
- /****************************************************
- * Delay functions									*
- ****************************************************
-void DelayFor18TCY(void) // Delay of 18 cycles
-{
-	Delay10TCYx(1);
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-}
-
-void DelayPORXLCD(void)
-{
-	Delay1KTCYx(15);	// Delay of 15 ms
-						// Cycles = (TimeDelay * Fosc)/4
-						// Cycles = (15ms * 4MHz)/4
-						// Cycles = 15,000
-}
-
-void DelayXLCD(void)
-{
-	Delay1KTCYx(5); 	// Delay of 5 ms
-						// Cycles = (TimeDelay * Fosc)/4
-						// Cycles = (5ms * 4MHz)/4
-						// Cycles = 5,000
-}
-*/
-
-
-
-
 
 void main (void)
 {
-    // 2 segundos de delay na inicializacao
-    Delay10KTCYx(50);Delay10KTCYx(50);Delay10KTCYx(50);Delay10KTCYx(50);
-
     short i;
+    char null_0 [sizeof(unsigned long)*8+1];
+    char null_1 [sizeof(unsigned long)*8+1];
+
     //FOSC = INTOSC_EC, the actual value for FOSC<3:0> = b'1001', which accesses the internal clock and sets RA6 as a Fosc/4 pin.
-    //OSCCON=0b110; // 4 mhz
+    // OSCCON=0b110; // 4 mhz
     // OSCCON=0b111; // 8 mhz
-    //OSCCON=0b11110010; // 8 mhz ,  SCS<1:0> = b'10', which activates the internal oscillator.
+    // OSCCON=0b11110010; // 8 mhz ,  SCS<1:0> = b'10', which activates the internal oscillator.
 
     //IRCF0=0;
     //IRCF1=1;
@@ -167,11 +149,7 @@ void main (void)
    // SCS1=1;
    // SCS0=0;
 
-
-
-    /*
-
-     * REGISTER 2-2: OSCCON: OSCILLATOR CONTROL REGISTER
+    /*  REGISTER 2-2: OSCCON: OSCILLATOR CONTROL REGISTER
 
         IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
         bit 7 ................................ bit 0
@@ -209,35 +187,37 @@ void main (void)
         3: Default output frequency of INTOSC on Reset
      */
 
-   /*
-    SPPEN=0;
-    CMCON=0;
-    PSPIE=0;
-    CCP1=0b0000;
-    CCP1CON=0;
-    P1M0=0b0;
-    P1M1=0b0;
-    //ECCP1CON
-*/
+    TRISB=0x00; // configura PORTB para saida do LCD
+    TRISD6=0;   // configura LED
+    TRISD7=0;   // configura LED
+    TRISA0=1;   // configura ENTRADA do TERMISTOR LM35
+    TRISA1=1;   // configura ENTRADA do LDR
 
-    TRISB=0x00;
-    TRISD6=0;
-    TRISD7=0;
+    ADCON1bits.PCFG=0b1101; // Configura somente as portas AN0 e AN1 como AD
 
-    piscaVermelho();
-    Delay10KTCYx(10); // 1 seg a 4 mhz
+    ADFM=1;      // utiliza o total de 10 bits no ADRES
+    /*
+     *  Página 33 de 74O bit de ADFM tem a função de organizar o resultado da
+     *  conversão A/D, de forma que o osvalores convertidos sejam justificados
+     *  a direita ou a esquerda nos registradores ADRESH e ADRESL. Caso venhamos
+     *  configurar ADFM = 1, organizamos o valor da conversão a direita,ou seja,
+     *  os oitos bits menos significativo será armazendo em ADRESL, e os 2 bits
+     *  maissignificativo serão armazenados em ADRESH.Caso ADFM = 0,
+     *  justificaremos a esquerda os valores de conversão, desta forma os
+     *  oitosbits mais significativos ficarão em ADRESH e os 2 menos
+     *  significativo ficará em ADRESL.
+     */
 
-    
     for(i=0;i<3;i++)
     {
-        LED2=1;
-        Delay10KTCYx(50);  // Delay of 10 ms * 50 = 500 ms
-        LED2=0;
-        Delay10KTCYx(50);	// Delay of 100 ms
+        LED2=1; LED1=0;
+        Delay1KTCYx(500);  //  500 ms
+
+        LED2=0; LED1=1;
+        Delay1KTCYx(500);
     }
+    LED1=0;
     
-    Delay10KTCYx(50);piscaVermelho();Delay10KTCYx(50);piscaVermelho();Delay10KTCYx(50);
-    Delay10KTCYx(200);
 
     initLCD();
 
@@ -247,27 +227,82 @@ void main (void)
     //#######################################################################
     //#######################################################################
 
-    piscaVermelho();Delay10KTCYx(50);piscaVermelho();Delay10KTCYx(50);
-    Delay10KTCYx(50);piscaVermelho();Delay10KTCYx(50);
-
     while(BusyXLCD());
         WriteCmdXLCD(0x01);
         
     SetDDRamAddr(0x00);
-    putrsXLCD ("PIC18F4550");
+              //0123456789_123456789
+    putrsXLCD ("Projeto:  PIC18F4550");
     SetDDRamAddr(0x40);
-    putrsXLCD ("PIC18F4550");
-    SetDDRamAddr(0x80);
-    putrsXLCD ("PIC18F4550");
+    putrsXLCD ("Medir Luz & Temperat");
+
+    //SetDDRamAddr(0x14);
+    //putrsXLCD ("Linha 3: PIC18F4550");
+    //SetDDRamAddr(0x54);
+    //putrsXLCD ("Linha 4: PIC18F4550");
+
 
 
 
     while (1)
     {
-        LED2=1;
-        Delay10KTCYx(50);     // delay aproximado de 100 ms
-        LED2=0;
-        Delay10KTCYx(50);     // delay aproximado de 100 ms
+        piscaVermelho();
+        //Delay10KTCYx(50);     // delay aproximado de 100 ms
+
+        ///////////////////////////////////////////////////
+
+        ADCON0bits.CHS=0b0000;  //usa o AN0 para CONversao DS39626E-page 223
+                                // AN0 = Termistor LM35
+        ADCON0bits.ADON=1;  // liga o AD para CONversao
+        Delay1KTCYx(1);     // delay aproximado de 1 ms
+
+        ADCON0bits.GO=1;    // inicia a CONversao
+        while (ADCON0bits.GO) ;
+                            //  aguarda o termino da CONversao
+        //corrente = ADRES;
+
+            while(BusyXLCD()) ;
+            SetDDRamAddr(0x14); //linha 2
+                      //0123456789_123456789
+            putrsXLCD ("Temperatura : ");
+            //putrsXLCD ( ltoa (null_0,((ADRES*5)/1023)+9,10) ); // era usado com o ADRESL e ADRESH invertido errado
+            putrsXLCD ( ltoa (null_0,( ADRES * 500) / 1023 ,10) );
+            /*
+             * Equacao realizada para ajustar a temperatura, com
+             * ajuste fino de +9 graus centigrados para temperatura local
+             *
+             */
+            putcXLCD(0xDF); // imprime o caractere de "grau" (degree)
+            putrsXLCD ("c ");
+
+        ///////////////////////////////////////////////////
+
+
+
+        piscaVermelho();
+        //Delay10KTCYx(50);     // delay aproximado de 100 ms
+
+        ///////////////////////////////////////////////////
+
+        ADCON0bits.CHS=0b0001;  //usa o AN0 para CONversao DS39626E-page 223
+                                // AN1 = Termistor LDR
+        ADCON0bits.ADON=1;  // liga o AD para CONversao
+        Delay1KTCYx(1);     // delay aproximado de 1 ms
+
+        ADCON0bits.GO=1;    // inicia a CONversao
+        while (ADCON0bits.GO) ;
+                            //  aguarda o termino da CONversao
+        //corrente = ADRES;
+
+            while(BusyXLCD()) ;
+                SetDDRamAddr(0x54); //linha 2
+                          //0123456789_123456789
+                putrsXLCD ("Luminosidade: ");
+                putrsXLCD ( ltoa (null_1,ADRES,10) );
+                putrsXLCD (" ");
+
+        ///////////////////////////////////////////////////
+
     }
 
 
@@ -276,6 +311,6 @@ void main (void)
 
 void piscaVermelho (void){
     LED2=1;
-    Delay10KTCYx(20);
+    Delay1KTCYx(100);
     LED2=0;
 }
