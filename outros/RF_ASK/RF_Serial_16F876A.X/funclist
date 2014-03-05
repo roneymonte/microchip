@@ -1,0 +1,10 @@
+_Parpadear: CODE, 304 0 34
+_main: CODE, 374 0 46
+_serialAvailable: CODE, 296 0 8
+___lldiv: CODE, 108 0 72
+_isr: CODE, 420 0 29
+_serialRead: CODE, 281 0 15
+_DelayBigMs: CODE, 338 0 25
+_sci_Init: CODE, 17 0 91
+_Recibir: CODE, 230 0 51
+Total: 371
