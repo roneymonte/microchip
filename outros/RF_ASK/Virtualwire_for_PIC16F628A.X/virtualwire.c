@@ -13,6 +13,9 @@
 #define RxTris TRISB3
 #define TxTris TRISB4
 
+#define _XTAL_FREQ 4000000
+
+
 #include "common.h"
 #define OVERSAMPLING	8
 

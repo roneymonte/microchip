@@ -1,0 +1,20 @@
+_delay: CODE, 4060 0 18
+__stringdata: SMALLCONST, 2088 0 11
+_main: CODE, 3322 0 138
+_vw_pll: CODE, 3056 0 266
+main@F5280: SMALLCONST, 2064 0 16
+_symbols: SMALLCONST, 2048 0 16
+_vw_isr_tmr0: CODE, 2756 0 300
+__crc_ccitt_update: CODE, 3830 0 86
+_vw_tx_stop: CODE, 4086 0 8
+_vw_tx_start: CODE, 4004 0 34
+__initialization: CODE, 3968 0 26
+___lldiv: CODE, 3460 0 134
+_vw_setup: CODE, 3716 0 114
+_Delay10KTCYx: CODE, 4038 0 22
+_vw_symbol_6to4: CODE, 3916 0 52
+_vw_wait_tx: CODE, 4078 0 8
+_vw_tx_buf_header: SMALLCONST, 2080 0 8
+_vw_send: CODE, 2100 0 656
+_global_isr: CODE, 8 0 3708
+Total: 5621
