@@ -14,6 +14,13 @@
  * LCD de 20x4 colunas, conectado ao PORTB
  * com biblioteca default da PLIB - PIC18
  *
+ * VERSAO 1.2 = adicionada a biblioteca Virtual Wire, para transmissao
+ * dos dados coletados atraves de RF, utilizando o pino RD4 para TX
+ *
+ * Os dados transmitidos sao: contador de sequencia, temperatura, luminosidade;
+ *
+ * Obs: o modulo RX esta programado em um Arduino. Ambos se comunicam a 600 bps
+ *
  */
 
 
@@ -21,6 +28,9 @@
 #include <plib/delays.h>
 #include <plib/xlcd.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include "WV_PIC_LIB/virtualwire.h"
 
 #include "config_bits.h"
 
@@ -28,6 +38,7 @@
 
 #define LED1 PORTDbits.RD6  // simples LED para monitoramento
 #define LED2 PORTDbits.RD7  // simples LED para monitoramento
+#define LEDI PORTDbits.RD3  // simples LED para monitoramento
 #define LDR  PORTAbits.AN1  // Sensor LDR conectado ao pino AN1
 #define LM35 PORTAbits.AN0  // Sensor LM45 conectado ao pino AN0
 
@@ -40,6 +51,8 @@ void DelayPORXLCD(void);
 void DelayXLCD(void);
 void initLCD(void);
 void piscaVermelho (void);
+void interrupt global_isr(void);
+void delay(unsigned int delay);
 
  //////////////////////////////////////////////////////////////////
 
@@ -131,11 +144,35 @@ void DelayFor18TCY(void)
 
  //////////////////////////////////////////////////////////////////
 
+void interrupt global_isr(void)
+{
+	if(T0IF)
+        {
+            LEDI=1;
+		vw_isr_tmr0();
+            LEDI=0;
+        }
+}
+
+void delay(unsigned int delay)
+{
+	while(delay--);
+}
+
+ //////////////////////////////////////////////////////////////////
+
 void main (void)
 {
-    short i;
-    char null_0 [sizeof(unsigned long)*8+1];
-    char null_1 [sizeof(unsigned long)*8+1];
+    unsigned short int i, temperatura, luminosidade, temp0, lumi0;
+    unsigned short int min=255;
+    unsigned short int max=0;
+    unsigned short int lmin=255;
+    unsigned short int lmax=0;
+    unsigned short int contador = 0;
+
+    bool change;
+    //char null_0 [sizeof(unsigned long)*8+1];
+    //char null_1 [sizeof(unsigned long)*8+1];
 
     //FOSC = INTOSC_EC, the actual value for FOSC<3:0> = b'1001', which accesses the internal clock and sets RA6 as a Fosc/4 pin.
     // OSCCON=0b110; // 4 mhz
@@ -190,6 +227,9 @@ void main (void)
     TRISB=0x00; // configura PORTB para saida do LCD
     TRISD6=0;   // configura LED
     TRISD7=0;   // configura LED
+    TRISD3=0;   // configura LED de Interrupcao
+    //TRISD5=1;   // suposto modulo RX
+    //TRISD4=0;   // Modulo TX
     TRISA0=1;   // configura ENTRADA do TERMISTOR LM35
     TRISA1=1;   // configura ENTRADA do LDR
 
@@ -208,17 +248,14 @@ void main (void)
      *  significativo ficará em ADRESL.
      */
 
-    for(i=0;i<3;i++)
+    for(i=0;i<10;i++)
     {
-        LED2=1; LED1=0;
-        Delay1KTCYx(500);  //  500 ms
+        LED2=1; LED1=0;  Delay1KTCYx(50);  //  50 ms
+        LED2=0; LED1=1;  Delay1KTCYx(50);
 
-        LED2=0; LED1=1;
-        Delay1KTCYx(500);
     }
     LED1=0;
     
-
     initLCD();
 
     //#######################################################################
@@ -232,23 +269,35 @@ void main (void)
         
     SetDDRamAddr(0x00);
               //0123456789_123456789
-    putrsXLCD ("Projeto:  PIC18F4550");
-    SetDDRamAddr(0x40);
-    putrsXLCD ("Medir Luz & Temperat");
+    //putrsXLCD ("Projeto:  PIC18F4550");
+    putrsXLCD ("PIC18F4550 LuzTempRF");
+
+    //SetDDRamAddr(0x40);
+    //putrsXLCD ("Luz & Temp & RF TX");
 
     //SetDDRamAddr(0x14);
     //putrsXLCD ("Linha 3: PIC18F4550");
     //SetDDRamAddr(0x54);
     //putrsXLCD ("Linha 4: PIC18F4550");
 
+    //const char text[] = "Hello from PIC ";
+    // excessao para teste de concatenacao de strings
+    //char *static_msg = "256,30,100";    // 10 + 1 posicoes
+    //char msg[ sizeof (static_msg) + 1 ];
+    char msg [12];  //  = "256,30,100 ";
 
+    //sprintf(msg, "%s %d", static_msg, var);
 
+    vw_setup(600);  // inicializa o modulo RF com 600 bps
+
+    // apenas um teste para imprimir o tamanho do float
+    sprintf(msg, "%s%d%c", "I", sizeof(float), NULL);
+    Delay1KTCYx(100);
+            vw_send(msg, sizeof(msg)-1);
 
     while (1)
     {
         piscaVermelho();
-        //Delay10KTCYx(50);     // delay aproximado de 100 ms
-
         ///////////////////////////////////////////////////
 
         ADCON0bits.CHS=0b0000;  //usa o AN0 para CONversao DS39626E-page 223
@@ -259,19 +308,23 @@ void main (void)
         ADCON0bits.GO=1;    // inicia a CONversao
         while (ADCON0bits.GO) ;
                             //  aguarda o termino da CONversao
-        //corrente = ADRES;
 
             while(BusyXLCD()) ;
             SetDDRamAddr(0x14); //linha 2
                       //0123456789_123456789
-            putrsXLCD ("Temperatura : ");
+            putrsXLCD ("Temp: ");
+            temperatura = ( ADRES * 500) / 1023 ;
+
             //putrsXLCD ( ltoa (null_0,((ADRES*5)/1023)+9,10) ); // era usado com o ADRESL e ADRESH invertido errado
-            putrsXLCD ( ltoa (null_0,( ADRES * 500) / 1023 ,10) );
+            //putrsXLCD ( ltoa (null_0,( ADRES * 500) / 1023 ,10) );
+            while(BusyXLCD()) ;
+            putrsXLCD ( ltoa (NULL, temperatura ,10) );
             /*
              * Equacao realizada para ajustar a temperatura, com
              * ajuste fino de +9 graus centigrados para temperatura local
              *
              */
+            while(BusyXLCD()) ;
             putcXLCD(0xDF); // imprime o caractere de "grau" (degree)
             putrsXLCD ("c ");
 
@@ -295,14 +348,76 @@ void main (void)
         //corrente = ADRES;
 
             while(BusyXLCD()) ;
-                SetDDRamAddr(0x54); //linha 2
+                //SetDDRamAddr(0x54); //linha 2
+                SetDDRamAddr(0x20);
                           //0123456789_123456789
-                putrsXLCD ("Luminosidade: ");
-                putrsXLCD ( ltoa (null_1,ADRES,10) );
-                putrsXLCD (" ");
+                putrsXLCD ("Luz: ");
+                luminosidade = ( ( ADRES / 8 )  ) ;
+
+            while(BusyXLCD()) ;
+                putrsXLCD ( ltoa (NULL,luminosidade,10) );
+                //putrsXLCD ( ltoa (null_1,ADRES,10) );
+                putrsXLCD ("% ");
 
         ///////////////////////////////////////////////////
 
+    if (temperatura != temp0)   { temp0=temperatura; change=true; }
+    else
+    if (luminosidade != lumi0)  { lumi0=luminosidade; change=true;}
+
+    if (change)
+        {
+        contador++;
+        if (temperatura < min) min=temperatura;
+        else
+            if (temperatura > max) max=temperatura;
+
+        if (luminosidade < lmin) lmin=luminosidade;
+        else
+            if (luminosidade > lmax) lmax=luminosidade;
+
+        while(BusyXLCD()) ;
+        SetDDRamAddr(0x40);
+            putrsXLCD ("Tmin"); putrsXLCD (ltoa (NULL,min,10));
+            putrsXLCD ("/");    putrsXLCD (ltoa (NULL,max,10));
+            putrsXLCD (" Luz"); putrsXLCD (ltoa (NULL,lmin,10));
+            putrsXLCD ("/");    putrsXLCD (ltoa (NULL,lmax,10));
+            putrsXLCD (" ");
+
+
+        while(BusyXLCD()) ;
+            SetDDRamAddr(0x66); //linha 4 nas duas ultimas posicoes
+                  //456789abcdef0123456_
+            putrsXLCD ("TX");
+
+            //i=sizeof(msg)-1; // apenas um teste para mostrar o tamanho da msg
+
+        sprintf(msg, "%u,%u,%u%s", contador, temperatura, luminosidade, ";");
+
+        while(BusyXLCD()) ;
+            SetDDRamAddr(0x54);
+            putrsXLCD (msg);
+            putrsXLCD ("  ");
+
+        LED1=1;
+
+            Delay1KTCYx(100);
+            vw_send(msg, sizeof(msg)-1);
+            //vw_send("Testando T",10);
+            //Delay10KTCYx(200);
+            //vw_send(text, sizeof(text)-1);
+                //vw_send("Testando T",10);
+                //Delay10KTCYx(200);
+        LED1=0;
+
+        while(BusyXLCD()) ;
+            SetDDRamAddr(0x66); //linha 2
+                  //456789abcdef0123456_
+            //putrsXLCD ("__");
+            putcXLCD ('_');putcXLCD ('_');
+            
+        change=false;
+        }
     }
 
 
@@ -311,6 +426,8 @@ void main (void)
 
 void piscaVermelho (void){
     LED2=1;
-    Delay1KTCYx(100);
+    Delay1KTCYx(15);
     LED2=0;
+    Delay1KTCYx(85);
+    
 }
