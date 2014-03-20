@@ -17,6 +17,12 @@
  * VERSAO 1.2 = adicionada a biblioteca Virtual Wire, para transmissao
  * dos dados coletados atraves de RF, utilizando o pino RD4 para TX
  *
+ * VERSAO 1.3 = Controle de tempo de "Afericao" (coleta/envio) dos dados
+ * agora feito atraves do TIMER1 com contador de 16 bits. Inicialmente
+ * configurado para se enviar os dados a cada minuto (60 seg) e posteriormente
+ * com intervalos maiores. Esta sendo usado um oscilador de 32.768mhz com funcao
+ * dedicada apenas para este TIMER.
+ *
  * Os dados transmitidos sao: contador de sequencia, temperatura, luminosidade;
  *
  * Obs: o modulo RX esta programado em um Arduino. Ambos se comunicam a 600 bps
@@ -27,18 +33,26 @@
 #include <xc.h>
 #include <plib/delays.h>
 #include <plib/xlcd.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "WV_PIC_LIB/virtualwire.h"
 
+#include "WV_PIC_LIB/virtualwire.h"
+#include "def_funcoes.h"
+#include "interrupcoes.h"
 #include "config_bits.h"
 
+
+
 #define _XTAL_FREQ 4000000
+#define USE_AND_MASKS
+
 
 #define LED1 PORTDbits.RD6  // simples LED para monitoramento
 #define LED2 PORTDbits.RD7  // simples LED para monitoramento
-#define LEDI PORTDbits.RD3  // simples LED para monitoramento
+#define LEDI PORTDbits.RD3  // simples LED para monitoramento do INTERRUPT
+#define LEDW PORTDbits.RD2  // simples LED para monitoramento do WHILE
 #define LDR  PORTAbits.AN1  // Sensor LDR conectado ao pino AN1
 #define LM35 PORTAbits.AN0  // Sensor LM45 conectado ao pino AN0
 
@@ -46,32 +60,27 @@
  //////////////////////////////////////////////////////////////////
 // Pre-Definicao de Funcoes
 
-void DelayFor18TCY(void);
-void DelayPORXLCD(void);
-void DelayXLCD(void);
-void initLCD(void);
-void piscaVermelho (void);
-void interrupt global_isr(void);
-void delay(unsigned int delay);
+
 
  //////////////////////////////////////////////////////////////////
+ // Variaveis Globais
+ ////////////////////
+
+unsigned int relogio=0;
+unsigned int contador = 0;
+unsigned short int temp0, lumi0;
+unsigned short int min=255;
+unsigned short int max=0;
+unsigned short int lmin=255;
+unsigned short int lmax=0;
+
 
 void DelayFor18TCY(void)
- {
- //Delay10TCYx(0x2); //delays 20 cycles
-
+ {      //Delay10TCYx(0x2); //delays 20 cycles
  	Delay10TCYx(1);
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-	Delay1TCY();
-        Delay1TCY();
-	Delay1TCY();
-
+	Delay1TCY();Delay1TCY();Delay1TCY();Delay1TCY();
+	Delay1TCY();Delay1TCY();Delay1TCY();Delay1TCY();
+        Delay1TCY();Delay1TCY();
  return;
  }
 
@@ -136,23 +145,16 @@ void DelayFor18TCY(void)
 
  void initLCD(void)
 {
-     
         OpenXLCD(FOUR_BIT & LINES_5X7);
         WriteCmdXLCD(DON & CURSOR_OFF & BLINK_OFF);
-
  }
 
  //////////////////////////////////////////////////////////////////
 
-void interrupt global_isr(void)
-{
-	if(T0IF)
-        {
-            LEDI=1;
-		vw_isr_tmr0();
-            LEDI=0;
-        }
-}
+
+
+ //////////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////////
 
 void delay(unsigned int delay)
 {
@@ -160,19 +162,17 @@ void delay(unsigned int delay)
 }
 
  //////////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////////
 
 void main (void)
 {
-    unsigned short int i, temperatura, luminosidade, temp0, lumi0;
-    unsigned short int min=255;
-    unsigned short int max=0;
-    unsigned short int lmin=255;
-    unsigned short int lmax=0;
-    unsigned short int contador = 0;
-
-    bool change;
+    unsigned int i;
+    bool MUDA=false;
+    
     //char null_0 [sizeof(unsigned long)*8+1];
     //char null_1 [sizeof(unsigned long)*8+1];
+    //float *input = (float*)malloc(DATA_SIZE*sizeof(float));
+    //float *output = (float*)malloc(DATA_SIZE*sizeof(float));
 
     //FOSC = INTOSC_EC, the actual value for FOSC<3:0> = b'1001', which accesses the internal clock and sets RA6 as a Fosc/4 pin.
     // OSCCON=0b110; // 4 mhz
@@ -227,11 +227,25 @@ void main (void)
     TRISB=0x00; // configura PORTB para saida do LCD
     TRISD6=0;   // configura LED
     TRISD7=0;   // configura LED
+    TRISD2=0;   // configura LED de while
     TRISD3=0;   // configura LED de Interrupcao
-    //TRISD5=1;   // suposto modulo RX
-    //TRISD4=0;   // Modulo TX
+
     TRISA0=1;   // configura ENTRADA do TERMISTOR LM35
     TRISA1=1;   // configura ENTRADA do LDR
+    TRISA2=1;   // configura ENTRADA para botao de estado do GIE
+
+    //CCP1CON=0x00;
+    //CCP2CON=0x00;
+
+    /*
+     *  If either of the CCP modules is configured in Compare
+     *  mode to generate a Special Event Trigger
+     *  (CCP1M3:CCP1M0 or CCP2M3:CCP2M0 = 1011),
+     *  this signal will reset Timer1. The trigger from CCP2 will
+     *  also start an A/D conversion if the A/D module is
+     *  enabled (see Section 15.3.4 ?Special Event Trigger?
+     *  for more information).
+     */
 
     ADCON1bits.PCFG=0b1101; // Configura somente as portas AN0 e AN1 como AD
 
@@ -252,7 +266,6 @@ void main (void)
     {
         LED2=1; LED1=0;  Delay1KTCYx(50);  //  50 ms
         LED2=0; LED1=1;  Delay1KTCYx(50);
-
     }
     LED1=0;
     
@@ -266,37 +279,55 @@ void main (void)
 
     while(BusyXLCD());
         WriteCmdXLCD(0x01);
-        
-    SetDDRamAddr(0x00);
-              //0123456789_123456789
-    //putrsXLCD ("Projeto:  PIC18F4550");
-    putrsXLCD ("PIC18F4550 LuzTempRF");
-
-    //SetDDRamAddr(0x40);
-    //putrsXLCD ("Luz & Temp & RF TX");
-
-    //SetDDRamAddr(0x14);
-    //putrsXLCD ("Linha 3: PIC18F4550");
-    //SetDDRamAddr(0x54);
-    //putrsXLCD ("Linha 4: PIC18F4550");
-
-    //const char text[] = "Hello from PIC ";
-    // excessao para teste de concatenacao de strings
-    //char *static_msg = "256,30,100";    // 10 + 1 posicoes
-    //char msg[ sizeof (static_msg) + 1 ];
-    char msg [12];  //  = "256,30,100 ";
-
-    //sprintf(msg, "%s %d", static_msg, var);
+        SetDDRamAddr(0x00);
+        putrsXLCD ("PIC18F4550 LuzTempRF");
 
     vw_setup(600);  // inicializa o modulo RF com 600 bps
 
     // apenas um teste para imprimir o tamanho do float
-    sprintf(msg, "%s%d%c", "I", sizeof(float), NULL);
-    Delay1KTCYx(100);
-            vw_send(msg, sizeof(msg)-1);
+    //sprintf(msg, "%s%d%c", "I", sizeof(float), NULL);
+    //Delay1KTCYx(100);
+            vw_send("INIT", 5);
+
+    Delay10KTCYx(250);
+
+    aferir();   // Primeira Afericao, ainda fora do contador do TIMER1
+
+
+    //Delay10KTCYx(250);
+
+    configTimers(); // ativa os parametros de contador do TIMER1 com 500ms
 
     while (1)
     {
+        
+        if (PORTAbits.RA2)
+        {
+            
+            if (!MUDA) { aferir(); GIE=1;}
+            MUDA=true;
+        }
+        else
+        {  if (MUDA) { aferir();GIE=0;}
+           MUDA=false;
+        }
+            
+
+        LATDbits.LD2=~PORTDbits.RD2;
+        
+    }
+}
+
+void aferir (void)
+{
+    unsigned short int i;
+    unsigned short int T, L;
+    unsigned short int temperatura, luminosidade;
+    bool change;
+
+    char msg [12];  //  = "256,30,100 " (12) ou "65535,1024,1024;" (16char)
+
+    
         piscaVermelho();
         ///////////////////////////////////////////////////
 
@@ -313,12 +344,20 @@ void main (void)
             SetDDRamAddr(0x14); //linha 2
                       //0123456789_123456789
             putrsXLCD ("Temp: ");
-            temperatura = ( ADRES * 500) / 1023 ;
+            temperatura = ( ADRES * 500 ) / 1023 ;
+            T = temperatura ;
+
+            //temperature = (ADCResult*5.0)/10.24;       //convert data into temperature (LM35 produces 10mV per degree celcius)
+
+            //putrsXLCD("Temp is ");                     //Display "Temp is" on the screen
+            //sprintf(buf, "%.3g", temperature );        //Convert temperature float value to string
+            //putsXLCD(buf);
+
 
             //putrsXLCD ( ltoa (null_0,((ADRES*5)/1023)+9,10) ); // era usado com o ADRESL e ADRESH invertido errado
             //putrsXLCD ( ltoa (null_0,( ADRES * 500) / 1023 ,10) );
             while(BusyXLCD()) ;
-            putrsXLCD ( ltoa (NULL, temperatura ,10) );
+            putrsXLCD ( ltoa (NULL, T , 10 ) );
             /*
              * Equacao realizada para ajustar a temperatura, com
              * ajuste fino de +9 graus centigrados para temperatura local
@@ -352,29 +391,31 @@ void main (void)
                 SetDDRamAddr(0x20);
                           //0123456789_123456789
                 putrsXLCD ("Luz: ");
-                luminosidade = ( ( ADRES / 8 )  ) ;
+
+                luminosidade = (  ADRES / 8 ) ;
+                L = luminosidade;
 
             while(BusyXLCD()) ;
-                putrsXLCD ( ltoa (NULL,luminosidade,10) );
+                putrsXLCD ( ltoa ( NULL,L,10) );
                 //putrsXLCD ( ltoa (null_1,ADRES,10) );
                 putrsXLCD ("% ");
 
         ///////////////////////////////////////////////////
 
-    if (temperatura != temp0)   { temp0=temperatura; change=true; }
+    if (T != temp0)   { temp0=T; change=true; }
     else
-    if (luminosidade != lumi0)  { lumi0=luminosidade; change=true;}
+    if (L != lumi0)  { lumi0=L; change=true;}
 
     if (change)
         {
         contador++;
-        if (temperatura < min) min=temperatura;
+        if (T < min) min=T;
         else
-            if (temperatura > max) max=temperatura;
+            if (T > max) max=T;
 
-        if (luminosidade < lmin) lmin=luminosidade;
+        if (L < lmin) lmin=L;
         else
-            if (luminosidade > lmax) lmax=luminosidade;
+            if (L > lmax) lmax=L;
 
         while(BusyXLCD()) ;
         SetDDRamAddr(0x40);
@@ -385,30 +426,28 @@ void main (void)
             putrsXLCD (" ");
 
 
-        while(BusyXLCD()) ;
-            SetDDRamAddr(0x66); //linha 4 nas duas ultimas posicoes
-                  //456789abcdef0123456_
-            putrsXLCD ("TX");
+        
 
             //i=sizeof(msg)-1; // apenas um teste para mostrar o tamanho da msg
 
-        sprintf(msg, "%u,%u,%u%s", contador, temperatura, luminosidade, ";");
+        sprintf(msg, "%u,%u,%u%s", contador, T, L, ";");
 
         while(BusyXLCD()) ;
             SetDDRamAddr(0x54);
             putrsXLCD (msg);
             putrsXLCD ("  ");
 
-        LED1=1;
+        LED1=1; // LED Verde Ligado
+
+        while(BusyXLCD()) ;
+            SetDDRamAddr(0x66); //linha 4 nas duas ultimas posicoes
+                  //456789abcdef0123456_
+            putrsXLCD ("TX");
 
             Delay1KTCYx(100);
             vw_send(msg, sizeof(msg)-1);
-            //vw_send("Testando T",10);
-            //Delay10KTCYx(200);
-            //vw_send(text, sizeof(text)-1);
-                //vw_send("Testando T",10);
-                //Delay10KTCYx(200);
-        LED1=0;
+
+        LED1=0; // LED Verde Desligado
 
         while(BusyXLCD()) ;
             SetDDRamAddr(0x66); //linha 2
@@ -417,7 +456,7 @@ void main (void)
             putcXLCD ('_');putcXLCD ('_');
             
         change=false;
-        }
+        
     }
 
 
@@ -426,8 +465,9 @@ void main (void)
 
 void piscaVermelho (void){
     LED2=1;
-    Delay1KTCYx(15);
+        Delay1KTCYx(15);
     LED2=0;
-    Delay1KTCYx(85);
+        Delay1KTCYx(85);
     
 }
+

@@ -15,6 +15,22 @@
 //#pragma config FOSC = INTOSC_EC // Oscillator Selection bits (Internal oscillator, CLKO function on RA6, EC used by USB (INTCKO))
 //#pragma config FOSC = INTOSC_XT // Oscillator Selection bits (Internal oscillator, XT used by USB (INTXT))
 //#pragma config FOSC = XT_XT     // Oscillator Selection bits (XT oscillator (XT))
+
+// 111x = HS oscillator, PLL enabled (HSPLL)
+// 110x = HS oscillator (HS)
+
+// 1011 = Internal oscillator, HS oscillator used by USB (INTHS)
+// 1010 = Internal oscillator, XT used by USB (INTXT)
+// 1001 = Internal oscillator, CLKO function on RA6, EC used by USB (INTCKO)
+// 1000 = Internal oscillator, port function on RA6, EC used by USB (INTIO)
+
+// 0111 = EC oscillator, PLL enabled, CLKO function on RA6 (ECPLL)
+// 0110 = EC oscillator, PLL enabled, port function on RA6 (ECPIO)
+// 0101 = EC oscillator, CLKO function on RA6 (EC)
+// 0100 = EC oscillator, port function on RA6 (ECIO)
+// 001x = XT oscillator, PLL enabled (XTPLL)
+// 000x = XT oscillator (XT)
+
 #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
 #pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
