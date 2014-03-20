@@ -2,11 +2,8 @@
  * File:   main.c
  * Author: roney
  *
- * Created on November 4, 2013, 4:53 PM (on GNU/Linux)
+ * Created on November 4, 2013, 4:53 PM
  * Version 0.2
- * Updated Version 1.0.1    @ 2013NOV10 - 00:18
- * via GitHub on MPLABX and Subversion 1.6.17 (for win)
- *
  */
 
 
