@@ -1,0 +1,40 @@
+[PROJECT]
+Target=usart.HEX
+Development_Mode=2
+Processor=0x886F
+Processor_Text=PIC16F886
+ToolSuite=CCS
+
+[Directories]
+Include=
+Library=
+LinkerScript=
+
+[Target Data]
+FileList=D:\CDS Kits ACEPIC\CD ACEPIC 18_28\PIC16F886\USART\usart.c
+BuildTool=C-COMPILER
+OptionString=+FM
+AdditionalOptionString=
+BuildRequired=1
+
+[usart.c]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+
+[mru-list]
+1=usart.c
+
+[Windows]
+0=0000 usart.c 0 0 796 451 3 0
+
+[Opened Files]
+1=usart.c
+2=..\INT_EXT\int_ext.c
+3=
+[Units]
+Count=1
+1=usart.c (main)

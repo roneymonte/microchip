@@ -1,0 +1,22 @@
+ÀÄcontrole
+   ÀÄMAIN  0/130  Ram=2
+      ÃÄ@cinit1  (Inline)  Ram=0
+      ÃÄ??0??
+      ÃÄ@PSTRINGC_19200_31766_31767  0/36  Ram=2
+      ÀÄtrata_serial  0/412  Ram=4
+         ÃÄ@delay_ms1  0/38  Ram=1
+         ÃÄ@MUL3232  0/84  Ram=14
+         ÃÄ@DIV3232  0/142  Ram=13
+         ÃÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+         ÃÄ@PRINTF_L32U_19200_31766_31767  0/166  Ram=12
+         ³  ÃÄ@DIV3232  0/142  Ram=13
+         ³  ÀÄ@DIV3232  0/142  Ram=13
+         ÃÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+         ÃÄ@delay_ms1  0/38  Ram=1
+         ÃÄ@MUL3232  0/84  Ram=14
+         ÃÄ@DIV3232  0/142  Ram=13
+         ÃÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+         ÃÄ@PRINTF_L32U_19200_31766_31767  0/166  Ram=12
+         ³  ÃÄ@DIV3232  0/142  Ram=13
+         ³  ÀÄ@DIV3232  0/142  Ram=13
+         ÀÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3

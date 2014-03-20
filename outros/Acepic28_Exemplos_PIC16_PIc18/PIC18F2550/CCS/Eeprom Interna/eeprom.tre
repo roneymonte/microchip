@@ -1,0 +1,15 @@
+읕eeprom
+   읕main  0/720  Ram=2
+      쳐@cinit1  (Inline)  Ram=0
+      쳐??0??
+      쳐@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      쳐@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      쳐@delay_ms1  0/38  Ram=1
+      쳐@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      쳐@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      쳐@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      쳐@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      쳐@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      쳐@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      쳐@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      읕@delay_ms1  0/38  Ram=1

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2012/06/20 16:08:02.000.881,=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2012/06/25 13:33:10.000.774,=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2012/06/25 13:40:35.000.453,=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2012/08/02 10:55:07.000.114,=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2012/08/02 10:57:22.000.425,=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2012/08/02 10:57:35.000.322,=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2012/08/02 10:58:13.000.290,E:\ACEPIC\Delphi\Projeto Caism USB\USBUnit2.pas=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2012/08/02 10:58:26.000.941,E:\ACEPIC\Delphi\Projeto Caism USB\USBUnit.pas=E:\ACEPIC\Delphi\Projeto Caism USB\USBUnit2.pas</Transaction>
+    <Transaction>2012/08/02 10:59:21.000.401,E:\ACEPIC\Delphi\Projeto Caism USB\MainUnit.pas=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2012/08/02 10:59:21.000.401,E:\ACEPIC\Delphi\Projeto Caism USB\MainUnit.dfm=C:\Users\Sandrini\Documents\RAD Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2012/08/02 10:59:56.000.130,E:\ACEPIC\Delphi\Projeto Caism USB\Central.dproj=C:\Users\Sandrini\Documents\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2012/09/23 14:33:46.000.937,G:\ACEPIC\CDS Kits ACEPIC\CD ACEPIC 28\Exemplos\PIC18F2550\C18\USB\Deplhi XE2\Central_XE2.dproj=G:\ACEPIC\CDS Kits ACEPIC\CD ACEPIC 28\Exemplos\PIC18F2550\C18\USB\Deplhi XE2\Central.dproj</Transaction>
+  </Transactions>
+</BorlandProject>

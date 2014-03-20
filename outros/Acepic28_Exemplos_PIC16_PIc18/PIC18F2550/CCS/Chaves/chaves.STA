@@ -1,0 +1,44 @@
+
+ROM used: 160 (0%)
+          160 (0%) including unused fragments
+
+          0 Average locations per line
+          7 Average locations per statement
+
+RAM used: 5 (0%) at main() level
+          6 (0%) worst case
+
+Stack used: 1 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   62    22 100  chaves.c
+  412     0   0  C:\Program Files\PICC\devices\18F2550.h
+----- -----
+  474    22 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     38  12   1             @delay_ms1
+0    118  37   1   415  2.4  main
+ Inline        0   485  4.3  @cinit1
+
+Program metrics:
+    Functions               2
+    Statements              22
+    Comments                116
+    Volume (V)              1067
+    Difficulty (D)          6.5
+    Effort to implement (E) 6986
+    Time to implement (T)   6 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   4
+    Maintainability (MI)    64
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-07FFE   156  32608  
+
+
+

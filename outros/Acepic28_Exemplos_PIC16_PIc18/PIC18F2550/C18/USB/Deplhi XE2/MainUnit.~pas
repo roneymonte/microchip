@@ -1,0 +1,158 @@
+unit MainUnit;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, LED, ExtCtrls;
+
+const
+   //tamanho máximo dos buffers de envio e recepção
+   BufferInSize  = 40;
+   BufferOutSize = 1;
+
+type
+
+   //buffers de envio e recepção
+   TBufferIn = array[0..BufferInSize] of byte;
+   TBufferOut = array[0..BufferOutSize] of byte;
+
+  TForm1 = class(TForm)
+    Label1: TLabel;
+    Label2: TLabel;
+    LDataRec: TLabel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    LED1: TLED;
+    LED2: TLED;
+    LED3: TLED;
+    LED4: TLED;
+    LED5: TLED;
+    LED6: TLED;
+    LED7: TLED;
+    LED8: TLED;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    { Private declarations }
+    FBufferIn:TBufferIn;
+    FBufferOut:TBufferOut;
+    function USBEvent(var Msg: TMessage): Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+uses
+  USBUnit;
+
+const
+
+   //constantes vendorID e productID em Hexadecimal
+   VENDOR_ID           = $0461;
+   PRODUCT_ID          = $0020;
+
+{$R *.dfm}
+
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Application.HookMainWindow(USBEvent);
+  Connect(Application.Handle);
+  //Label1.Caption:= 'Dispositivo Conectado';
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+   Application.UnHookMainWindow(USBEvent);
+end;
+
+function TForm1.USBEvent(var Msg: TMessage): Boolean;
+var
+   DevHandle  : cardinal;
+   index      : integer;
+   RecStr     : String;
+   //TextBuffer : Array [0..255] of char;
+begin
+  result := False;
+  if Msg.Msg = WM_HID_EVENT then
+
+  begin
+     case Msg.WParam of
+
+        // Evento : un dispositivo HID  insertado
+        NOTIFY_PLUGGED :
+        begin
+           // handle del dispositivo HID
+           DevHandle := Msg.LParam;
+           // verificamos si se trata de nuestro dispositivo HID - USB con su VID PID
+           if (GetVendorID(DevHandle) = VENDOR_ID) and (GetProductID(DevHandle) = PRODUCT_ID) then
+           begin
+              Label1.Caption:= 'Dispositivo Conectado';
+           end;
+           result := true;
+        end;
+
+        // Evento : un dispositivo HID  Removido
+        NOTIFY_UNPLUGGED :
+        begin
+           // handle del dispositivo HID
+           DevHandle := Msg.LParam;
+           // verificamos si se trata de nuestro dispositivo HID - USB con su VID PID
+           if (GetVendorID(DevHandle) = VENDOR_ID) and (GetProductID(DevHandle) = PRODUCT_ID) then
+           begin
+              Label1.Caption:= 'Dispositivo Desconectado';
+           end;
+           result := true;
+        end;
+
+        // un dispositivo HID insertado o removido
+        // este evento se dispara despues de NotifyPlugged o NotifyUnplugged.
+        NOTIFY_CHANGED :
+        begin
+           // and set it's read notification flag to true...
+           DevHandle := GetHandle(VENDOR_ID,PRODUCT_ID);
+           SetReadNotify(DevHandle,true);
+           result := true;
+        end;
+
+        //Um dos dispositivos HID está enviando dados
+        NOTIFY_READ :
+        begin
+           //beep;
+           DevHandle := Msg.LParam;
+           //Verifica se o dispositivo enviando dado se trata do dispositivo
+           //que nos interessa. Essa verificação se faz pelo VID e PID
+           if (GetVendorID(DevHandle) = VENDOR_ID) and (GetProductID(DevHandle) = PRODUCT_ID) then
+           begin
+               //Verificado o dispositivo, será feito o armazenamento dos dados no
+               //buffer FBufferIn, lembrando que o primeiro byte é o REPORT ID e
+               //não faz parte do dado.
+               Read(DevHandle,@FBufferIn);
+
+               if FBufferIn[1]='1' then
+                  Led1.
+
+               // la funcion GetOutputReportLength  obtiene la longitud(bytes) del paquete que ha llegado del puerto
+               for index:=1 to 14 do //GetOutputReportLength(DevHandle)-1 do  //pudimos usar ...  BufferInSize
+               begin
+
+               RecStr:= RecStr + InttoStr(FBufferIn[index]);
+
+
+               end;
+
+               LDataRec.Caption := RecStr;
+               RecStr:='';
+           end;
+           result := true;
+        end;
+     end;
+  end;
+end;
+
+end.

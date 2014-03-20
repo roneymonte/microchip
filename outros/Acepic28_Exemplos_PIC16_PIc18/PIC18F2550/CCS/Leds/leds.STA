@@ -1,0 +1,44 @@
+
+ROM used: 166 (1%)
+          166 (1%) including unused fragments
+
+          0 Average locations per line
+          7 Average locations per statement
+
+RAM used: 6 (0%) at main() level
+          7 (0%) worst case
+
+Stack used: 1 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   49    25 100  leds.c
+  412     0   0  C:\Program Files\PICC\devices\18F2550.h
+----- -----
+  461    25 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     38  11   1             @delay_ms1
+0    124  37   2   773  4.8  main
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               1
+    Statements              25
+    Comments                118
+    Volume (V)              778
+    Difficulty (D)          4.7
+    Effort to implement (E) 3633
+    Time to implement (T)   3 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   3
+    Maintainability (MI)    39
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-07FFE   162  32602  
+
+
+

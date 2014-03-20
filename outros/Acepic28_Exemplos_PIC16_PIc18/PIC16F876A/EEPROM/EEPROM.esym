@@ -1,0 +1,288 @@
+C L "main" 0 16 1 "FUNCTION"
+D G "__PCM__" 0 57 ""4.068""
+D G "__DEVICE__" 0 57 "876"
+D G "__DATE__" 0 57 ""26-jul-11""
+D G "__TIME__" 0 57 ""15:00:09"" "Kit de desenvolvimento ACEPIC 28"
+d G "PIN_A0" 1 19 "40"
+d G "PIN_A1" 1 20 "41"
+d G "PIN_A2" 1 21 "42"
+d G "PIN_A3" 1 22 "43"
+d G "PIN_A4" 1 23 "44"
+d G "PIN_A5" 1 24 "45"
+d G "PIN_B0" 1 26 "48"
+d G "PIN_B1" 1 27 "49"
+d G "PIN_B2" 1 28 "50"
+d G "PIN_B3" 1 29 "51"
+d G "PIN_B4" 1 30 "52"
+d G "PIN_B5" 1 31 "53"
+d G "PIN_B6" 1 32 "54"
+d G "PIN_B7" 1 33 "55"
+d G "PIN_C0" 1 35 "56"
+d G "PIN_C1" 1 36 "57"
+d G "PIN_C2" 1 37 "58"
+d G "PIN_C3" 1 38 "59"
+d G "PIN_C4" 1 39 "60"
+d G "PIN_C5" 1 40 "61"
+d G "PIN_C6" 1 41 "62"
+d G "PIN_C7" 1 42 "63"
+d G "FALSE" 1 45 "0"
+d G "TRUE" 1 46 "1"
+d G "BYTE" 1 48 "int8"
+d G "BOOLEAN" 1 49 "int1"
+d G "getc" 1 51 "getch"
+d G "fgetc" 1 52 "getch"
+d G "getchar" 1 53 "getch"
+d G "putc" 1 54 "putchar"
+d G "fputc" 1 55 "putchar"
+d G "fgets" 1 56 "gets"
+d G "fputs" 1 57 "puts"
+d G "WDT_FROM_SLEEP" 1 62 "3"
+d G "WDT_TIMEOUT" 1 63 "11"
+d G "MCLR_FROM_SLEEP" 1 64 "19"
+d G "MCLR_FROM_RUN" 1 65 "27"
+d G "NORMAL_POWER_UP" 1 66 "25"
+d G "BROWNOUT_RESTART" 1 67 "26"
+d G "RTCC_INTERNAL" 1 75 "0"
+d G "RTCC_EXT_L_TO_H" 1 76 "32"
+d G "RTCC_EXT_H_TO_L" 1 77 "48"
+d G "RTCC_DIV_1" 1 79 "8"
+d G "RTCC_DIV_2" 1 80 "0"
+d G "RTCC_DIV_4" 1 81 "1"
+d G "RTCC_DIV_8" 1 82 "2"
+d G "RTCC_DIV_16" 1 83 "3"
+d G "RTCC_DIV_32" 1 84 "4"
+d G "RTCC_DIV_64" 1 85 "5"
+d G "RTCC_DIV_128" 1 86 "6"
+d G "RTCC_DIV_256" 1 87 "7"
+d G "RTCC_8_BIT" 1 90 "0"
+d G "WDT_18MS" 1 102 "0x8008"
+d G "WDT_36MS" 1 103 "9"
+d G "WDT_72MS" 1 104 "10"
+d G "WDT_144MS" 1 105 "11"
+d G "WDT_288MS" 1 106 "12"
+d G "WDT_576MS" 1 107 "13"
+d G "WDT_1152MS" 1 108 "14"
+d G "WDT_2304MS" 1 109 "15"
+d G "T1_DISABLED" 1 115 "0"
+d G "T1_INTERNAL" 1 116 "0x85"
+d G "T1_EXTERNAL" 1 117 "0x87"
+d G "T1_EXTERNAL_SYNC" 1 118 "0x83"
+d G "T1_CLK_OUT" 1 120 "8"
+d G "T1_DIV_BY_1" 1 122 "0"
+d G "T1_DIV_BY_2" 1 123 "0x10"
+d G "T1_DIV_BY_4" 1 124 "0x20"
+d G "T1_DIV_BY_8" 1 125 "0x30"
+d G "T2_DISABLED" 1 130 "0"
+d G "T2_DIV_BY_1" 1 131 "4"
+d G "T2_DIV_BY_4" 1 132 "5"
+d G "T2_DIV_BY_16" 1 133 "6"
+d G "CCP_OFF" 1 139 "0"
+d G "CCP_CAPTURE_FE" 1 140 "4"
+d G "CCP_CAPTURE_RE" 1 141 "5"
+d G "CCP_CAPTURE_DIV_4" 1 142 "6"
+d G "CCP_CAPTURE_DIV_16" 1 143 "7"
+d G "CCP_COMPARE_SET_ON_MATCH" 1 144 "8"
+d G "CCP_COMPARE_CLR_ON_MATCH" 1 145 "9"
+d G "CCP_COMPARE_INT" 1 146 "0xA"
+d G "CCP_COMPARE_RESET_TIMER" 1 147 "0xB"
+d G "CCP_PWM" 1 148 "0xC"
+d G "CCP_PWM_PLUS_1" 1 149 "0x1c"
+d G "CCP_PWM_PLUS_2" 1 150 "0x2c"
+d G "CCP_PWM_PLUS_3" 1 151 "0x3c"
+v G "CCP_1" 1 152 "int16"
+v G "CCP_2" 1 156 "int16"
+d G "SPI_MASTER" 1 163 "0x20"
+d G "SPI_SLAVE" 1 164 "0x24"
+d G "SPI_L_TO_H" 1 165 "0"
+d G "SPI_H_TO_L" 1 166 "0x10"
+d G "SPI_CLK_DIV_4" 1 167 "0"
+d G "SPI_CLK_DIV_16" 1 168 "1"
+d G "SPI_CLK_DIV_64" 1 169 "2"
+d G "SPI_CLK_T2" 1 170 "3"
+d G "SPI_SS_DISABLED" 1 171 "1"
+d G "SPI_SAMPLE_AT_END" 1 173 "0x8000"
+d G "SPI_XMIT_L_TO_H" 1 174 "0x4000"
+d G "UART_ADDRESS" 1 180 "2"
+d G "UART_DATA" 1 181 "4"
+d G "A0_A3_A1_A3" 1 185 "0xfff04"
+d G "A0_A3_A1_A2_OUT_ON_A4_A5" 1 186 "0xfcf03"
+d G "A0_A3_A1_A3_OUT_ON_A4_A5" 1 187 "0xbcf05"
+d G "NC_NC_NC_NC" 1 188 "0x0ff07"
+d G "A0_A3_A1_A2" 1 189 "0xfff02"
+d G "A0_A3_NC_NC_OUT_ON_A4" 1 190 "0x9ef01"
+d G "A0_VR_A1_VR" 1 191 "0x3ff06"
+d G "A3_VR_A2_VR" 1 192 "0xcff0e"
+d G "CP1_INVERT" 1 193 "0x0000010"
+d G "CP2_INVERT" 1 194 "0x0000020"
+d G "VREF_LOW" 1 202 "0xa0"
+d G "VREF_HIGH" 1 203 "0x80"
+d G "VREF_A2" 1 205 "0x40"
+d G "ADC_OFF" 1 213 "0" "ADC Off"
+d G "ADC_CLOCK_DIV_2" 1 214 "0x10000"
+d G "ADC_CLOCK_DIV_4" 1 215 "0x4000"
+d G "ADC_CLOCK_DIV_8" 1 216 "0x0040"
+d G "ADC_CLOCK_DIV_16" 1 217 "0x4040"
+d G "ADC_CLOCK_DIV_32" 1 218 "0x0080"
+d G "ADC_CLOCK_DIV_64" 1 219 "0x4080"
+d G "ADC_CLOCK_INTERNAL" 1 220 "0x00c0" "Internal 2-6us"
+d G "NO_ANALOGS" 1 223 "7" "None"
+d G "ALL_ANALOG" 1 224 "0" "A0 A1 A2 A3 A4"
+d G "AN0_AN1_AN2_AN4_VSS_VREF" 1 225 "3" "A0 A1 A2 A4 VRefh=A3"
+d G "AN0_AN1_AN3" 1 226 "4" "A0 A1 A3"
+d G "AN0_AN1_VSS_VREF" 1 227 "5" "A0 A1 VRefh=A3"
+d G "AN0_AN1_AN4_VREF_VREF" 1 228 "0x08" "A0 A1 A4 VRefh=A3 VRefl=A2"
+d G "AN0_AN1_VREF_VREF" 1 229 "0x0D" "A0 A1 VRefh=A3 VRefl=A2"
+d G "AN0" 1 230 "0x0E" "A0"
+d G "AN0_VREF_VREF" 1 231 "0x0F" "A0 VRefh=A3 VRefl=A2"
+d G "ANALOG_RA3_REF" 1 232 "0x1" "!old only provided for compatibility"
+d G "RA0_RA1_RA3_ANALOG" 1 233 "0x4" "!old only provided for compatibility"
+d G "RA0_RA1_ANALOG_RA3_REF" 1 234 "0x5" "!old only provided for compatibility"
+d G "ANALOG_RA3_RA2_REF" 1 235 "0x8" "!old only provided for compatibility"
+d G "RA0_RA1_ANALOG_RA3_RA2_REF" 1 236 "0xD" "!old only provided for compatibility"
+d G "RA0_ANALOG" 1 237 "0xE" "!old only provided for compatibility"
+d G "RA0_ANALOG_RA3_RA2_REF" 1 238 "0xF" "!old only provided for compatibility"
+d G "ADC_START_AND_READ" 1 242 "7" "This is the default if nothing is specified"
+d G "ADC_START_ONLY" 1 243 "1"
+d G "ADC_READ_ONLY" 1 244 "6"
+d G "L_TO_H" 1 256 "0x40"
+d G "H_TO_L" 1 257 "0"
+d G "GLOBAL" 1 259 "0x0BC0"
+d G "INT_RTCC" 1 260 "0x0B20"
+d G "INT_RB" 1 261 "0xFF0B08"
+d G "INT_EXT" 1 262 "0x0B10"
+d G "INT_AD" 1 263 "0x8C40"
+d G "INT_TBE" 1 264 "0x8C10"
+d G "INT_RDA" 1 265 "0x8C20"
+d G "INT_TIMER1" 1 266 "0x8C01"
+d G "INT_TIMER2" 1 267 "0x8C02"
+d G "INT_CCP1" 1 268 "0x8C04"
+d G "INT_CCP2" 1 269 "0x8D01"
+d G "INT_SSP" 1 270 "0x8C08"
+d G "INT_BUSCOL" 1 271 "0x8D08"
+d G "INT_EEPROM" 1 272 "0x8D10"
+d G "INT_TIMER0" 1 273 "0x0B20"
+d G "INT_COMP" 1 274 "0x8D40"
+C L "main" 0 16 1 "FUNCTION"
+F G "main" 0 21 "void()" "Envia a string pela serial e muda o cursor para a próxima linha"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 2 "FUNCTION"
+C L "main" 0 16 1 "FUNCTION"
+C L "main" 0 16 2 "FUNCTION"
+F B "reset_cpu" 0 0
+F B "abs" 1 0
+F B "sleep" 0 0
+F B "delay_cycles" 1 0
+F B "read_bank" 2 0
+F B "write_bank" 3 0
+F B "shift_left" 2 2
+F B "shift_right" 2 2
+F B "rotate_left" 2 0
+F B "rotate_right" 2 0
+F B "_mul" 2 0
+F B "strcpy" 2 0
+F B "memset" 3 0
+F B "memcpy" 3 0
+F B "isamoung" 2 0
+F B "isamong" 2 0
+F B "bit_set" 2 0
+F B "bit_clear" 2 0
+F B "bit_test" 2 0
+F B "toupper" 1 0
+F B "tolower" 1 0
+F B "swap" 1 0
+F B "printf" 1 255
+F B "fprintf" 1 255
+F B "sprintf" 1 255
+F B "make8" 2 0
+F B "make16" 2 0
+F B "make32" 1 255
+F B "label_address" 1 1
+F B "goto_address" 1 0
+F B "_va_arg" 1 0
+F B "offsetofbit" 2 2
+F B "enable_interrupts" 1 0
+F B "disable_interrupts" 1 0
+F B "interrupt_active" 1 0
+F B "clear_interrupt" 1 0
+F B "jump_to_isr" 1 0
+F B "ext_int_edge" 1 2
+F B "read_eeprom" 1 0
+F B "write_eeprom" 2 0
+F B "read_program_eeprom" 1 0
+F B "write_program_eeprom" 2 0
+F B "write_program_memory" 4 0
+F B "write_program_memory8" 4 0
+F B "read_program_memory" 4 0
+F B "read_program_memory8" 4 0
+F B "output_high" 1 0
+F B "output_low" 1 0
+F B "input" 1 0
+F B "input_state" 1 0
+F B "output_float" 1 0
+F B "output_drive" 1 0
+F B "output_bit" 1 1
+F B "output_toggle" 1 0
+F B "output_a" 1 0
+F B "output_b" 1 0
+F B "output_c" 1 0
+F B "input_a" 0 0
+F B "input_b" 0 0
+F B "input_c" 0 0
+F B "set_tris_a" 1 0
+F B "set_tris_b" 1 0
+F B "set_tris_c" 1 0
+F B "get_tris_a" 0 0
+F B "get_tris_b" 0 0
+F B "get_tris_c" 0 0
+F B "port_b_pullups" 1 0
+F B "setup_counters" 2 0
+F B "setup_wdt" 1 0
+F B "restart_cause" 0 0
+F B "restart_wdt" 0 0
+F B "get_rtcc" 0 0
+F B "set_rtcc" 1 0
+F B "get_timer0" 0 0
+F B "set_timer0" 1 0
+F B "setup_comparator" 1 0
+F B "setup_port_a" 1 0
+F B "setup_adc_ports" 1 0
+F B "setup_adc" 1 0
+F B "set_adc_channel" 1 0
+F B "read_adc" 0 1
+F B "adc_done" 0 0
+F B "setup_timer_0" 1 0
+F B "setup_timer_1" 1 0
+F B "get_timer1" 0 0
+F B "set_timer1" 1 0
+F B "setup_timer_2" 3 0
+F B "get_timer2" 0 0
+F B "set_timer2" 1 0
+F B "setup_ccp1" 1 0
+F B "set_pwm1_duty" 1 0
+F B "setup_ccp2" 1 0
+F B "set_pwm2_duty" 1 0
+F B "setup_vref" 1 0
+F B "setup_spi" 1 0
+F B "spi_read" 0 1
+F B "spi_write" 1 0
+F B "spi_data_is_in" 0 0
+F B "setup_spi2" 1 0
+F B "spi_read2" 0 1
+F B "spi_write2" 1 0
+F B "spi_data_is_in2" 0 0
+F B "delay_ms" 1 0
+F B "delay_us" 1 0
+F B "putchar" 1 2
+F B "puts" 1 2
+F B "getch" 0 1
+F B "gets" 1 3
+F B "kbhit" 0 1
+F B "set_uart_speed" 1 3
+F B "setup_uart" 1 3

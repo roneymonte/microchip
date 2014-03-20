@@ -1,0 +1,31 @@
+ÀÄusart_rx_tx
+   ÀÄMAIN  0/166  Ram=2
+      ÃÄ@cinit1  (Inline)  Ram=0
+      ÃÄ??0??
+      ÃÄmsg_inicial  0/42  Ram=0
+      ³  ÃÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      ³  ÃÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      ³  ÃÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      ³  ÀÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+      ÃÄtrata_serial  0/412  Ram=4
+      ³  ÃÄ@delay_ms1  0/38  Ram=1
+      ³  ÃÄ@MUL3232  0/84  Ram=14
+      ³  ÃÄ@DIV3232  0/142  Ram=13
+      ³  ÃÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      ³  ÃÄ@PRINTF_L32U_19200_31766_31767  0/166  Ram=12
+      ³  ³  ÃÄ@DIV3232  0/142  Ram=13
+      ³  ³  ÀÄ@DIV3232  0/142  Ram=13
+      ³  ÃÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      ³  ÃÄ@delay_ms1  0/38  Ram=1
+      ³  ÃÄ@MUL3232  0/84  Ram=14
+      ³  ÃÄ@DIV3232  0/142  Ram=13
+      ³  ÃÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      ³  ÃÄ@PRINTF_L32U_19200_31766_31767  0/166  Ram=12
+      ³  ³  ÃÄ@DIV3232  0/142  Ram=13
+      ³  ³  ÀÄ@DIV3232  0/142  Ram=13
+      ³  ÀÄ@PSTRINGCN_19200_31766_31767  0/32  Ram=3
+      ÀÄmsg_inicial  0/42  Ram=0
+         ÃÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+         ÃÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+         ÃÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
+         ÀÄ@PSTRINGC_19200_31766_31767  0/34  Ram=2
