@@ -21,7 +21,8 @@
  * agora feito atraves do TIMER1 com contador de 16 bits. Inicialmente
  * configurado para se enviar os dados a cada minuto (60 seg) e posteriormente
  * com intervalos maiores. Esta sendo usado um oscilador de 32.768mhz com funcao
- * dedicada apenas para este TIMER.
+ * dedicada apenas para este TIMER. OBS: Versao ainda com muitos erros e defeitos.
+ *
  *
  * Os dados transmitidos sao: contador de sequencia, temperatura, luminosidade;
  *
