@@ -1,0 +1,8 @@
+_main: CODE, 152 0 50
+_configTimers: CODE, 246 0 30
+_WriteTimer1: CODE, 276 0 18
+__initialization: CODE, 312 0 0
+_OpenTimer1: CODE, 202 0 44
+i2_WriteTimer1: CODE, 294 0 18
+_global_isr: CODE, 8 0 144
+Total: 304
