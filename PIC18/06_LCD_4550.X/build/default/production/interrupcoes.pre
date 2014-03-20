@@ -1,0 +1,84 @@
+
+# 1 "interrupcoes.c"
+
+
+
+void configTimers (void)
+{
+unsigned char inicializacaoT1;
+
+# 36
+T1RUN=1;
+
+# 66
+inicializacaoT1 = T1_SOURCE_EXT & T1_PS_1_8 & T1_OSC1EN_ON & T1_16BIT_RW & T1_SYNC_EXT_OFF;
+
+
+OpenTimer1(inicializacaoT1);
+
+# 168
+WriteTimer1( 0xFC00 );
+
+TMR1IF = 0;
+
+
+ei();
+
+
+GIE=1;
+
+
+
+TMR1IE=1;
+
+
+TMR1ON=1;
+
+LED2=1;
+
+}
+
+
+
+void interrupt global_isr(void)
+{
+
+if(TMR0IE && TMR0IF)
+{
+
+
+LED2=1;
+
+
+
+}
+
+
+
+
+if (TMR1IF)
+{
+
+
+LEDI=1;
+LEDI=0;
+
+if (relogio >= 60)
+{
+aferir();
+relogio=0;
+}
+else relogio++;
+
+
+
+while(BusyXLCD()) ;
+SetDDRamAddr(0x66);
+putrsXLCD ( ltoa ( NULL , relogio , 10) );
+
+TMR1IF=0;
+WriteTimer1( 0xFC00 );
+
+
+}
+}
