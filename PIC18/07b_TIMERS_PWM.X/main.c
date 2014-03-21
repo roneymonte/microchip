@@ -3,7 +3,8 @@
  * Author: roney
  *
  * Created on March 18, 2014, 2:37 PM
- * Versao Funcional em 21-mar-2014
+ * Versao Funcional em 21-mar-2014.B
+ * 
  */
 
 #include <xc.h>
