@@ -3,6 +3,7 @@
  * Author: roney
  *
  * Created on 11 de Fevereiro de 2014, 11:46
+ * Versao atualizada para testes em 21-mar-2014 
  */
 
 #include <xc.h>
