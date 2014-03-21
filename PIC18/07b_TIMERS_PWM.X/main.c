@@ -21,8 +21,9 @@
 // OBS: foi colocado um Led AZUL na portC2 (pino 17 da PIC18F4550) para PWM1
 
 #define _XTAL_FREQ 4000000      // Cristal externo na frequencia de 4mhz
-#define FOSC 4000000UL
-#define USE_AND_MASKS
+#define FOSC 4000000UL          // Oscilador funcionando na mesma freq de 4mhz
+#define USE_AND_MASKS           // Forma de selecao de palavras pre-definidas
+// nas bibliotecas implicitas do compilador XC8
 
 /*
  *
@@ -30,11 +31,6 @@
 
 void interrupt global_isr(void);
 void configTimers (void);
-//void interrupt interrupcao(void);
-
-// Variaveis Globais
-
-
 
 int main(int argc, char** argv) {
 
@@ -43,10 +39,6 @@ int main(int argc, char** argv) {
 
     TRISD=0;     // PORTD inteiro em Output
     TRISCbits.RC2=0;    // Output do PWM1/P1A
-
-    //ADCON1bits.PCFG=0b1111; // Todas possiveis portas analogicas em Digital
-    //CCP2CONbits.
-
 
     PORTD=0x00; // zera os leds dao PortD.
 
