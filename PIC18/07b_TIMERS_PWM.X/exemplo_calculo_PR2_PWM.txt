@@ -1,0 +1,25 @@
+' Oscillator  : 4MHz crystal
+' Keywords    : HARDWARE PWM
+' Description : PICBASIC PRO program to demonstrate the steps necessary
+
+' Output is a 250Hz signal with duty cycle sweeping
+' from 20% to 80% once per second.
+
+' PR2 = Timer2 period register, controls PWM period.
+' CCPR3L and CCP3CON<5:4>bits control the duty cycle,
+' and should be treated as a 10-bit word.
+
+' Fosc = Clock Frequency (4MHz)
+' PS = Timer2 Prescale Value (T2CON<1:0>)
+' Freq = PWM output frequency
+' Duty% = Duty cycle (20% = 0.2)
+
+' formulas:
+' PR2=(Fosc/(4*PS*Freq))-1
+' CCPR3L:CCP3CON<5:4>=(PR2+1)*4*Duty%
+
+' Use formula to determine PR2 value for a 250Hz signal,
+' 4MHz clock, and prescale=16. (4E6/(4*16*250))-1=249
+' Use formula to determine CCPR1L:CCP1CON<5:4> values for
+' example:  (249+1)*4*0.2=200 (20% value)
+'           (249+1)*4*0.8=800 (80% value)
