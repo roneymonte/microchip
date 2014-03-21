@@ -1,0 +1,13 @@
+_SetOutputPWM1: CODE, 524 0 78
+_main: CODE, 242 0 154
+_configTimers: CODE, 24 0 218
+_WriteTimer0: CODE, 806 0 18
+_WriteTimer1: CODE, 788 0 18
+__initialization: CODE, 824 0 0
+_OpenTimer0: CODE, 704 0 34
+_OpenTimer1: CODE, 660 0 44
+_OpenTimer2: CODE, 738 0 30
+_OpenPWM1: CODE, 768 0 20
+_SetDCPWM1: CODE, 602 0 58
+_global_isr: CODE, 8 0 516
+Total: 1188
