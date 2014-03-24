@@ -1,3 +1,27 @@
-_main: CODE, 32758 0 4
-__initialization: CODE, 32762 0 0
-Total: 4
+_OpenUSART: CODE, 30004 0 106
+_ciclo: CODE, 31096 0 486
+__stringdata: MEDIUMCONST, 32489 0 277
+_putch: CODE, 29454 0 2
+_IdleI2C: CODE, 29472 0 16
+_Delay1KTCYx: CODE, 29488 0 18
+_main: CODE, 30578 0 256
+__initialization: CODE, 29460 0 2
+___lwdiv: CODE, 29826 0 86
+_putsUSART: CODE, 29582 0 38
+___lldiv: CODE, 30444 0 134
+_isdigit: CODE, 29660 0 42
+_sprintf: CODE, 29760 0 66
+_CloseI2C: CODE, 29456 0 4
+_hexpowers: MEDIUMCONST, 32481 0 8
+_WriteUSART: CODE, 29506 0 20
+_Delay10KTCYx: CODE, 29526 0 24
+_putrsUSART: CODE, 29912 0 92
+_ReadI2C: CODE, 29620 0 40
+___llmod: CODE, 30110 0 106
+_WriteI2C: CODE, 30216 0 114
+_ltoa: CODE, 30330 0 114
+_ultoa: CODE, 30834 0 262
+__doprnt: CODE, 31582 0 898
+___wmul: CODE, 29702 0 58
+_OpenI2C: CODE, 29550 0 32
+Total: 3301
