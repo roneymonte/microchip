@@ -12,29 +12,39 @@
  *               adicionado RTC com circuito DS1307, e tambem nao funciona.
  *               obs: usando um Arduino, tudo funciona normalmente, sem dor.
  * Versao 0.2d - cada vez pior
+ * Verdao 0.2e - constatados problemas na PIC18F4550, trocada pela PIC18F2525
  *
  */
 
-#include <pic18f4550.h>
 #include <xc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "config_bits.h"
-#include <plib/i2c.h>
-#include <plib/delays.h>
-#include <plib/usart.h>
+//#include "config_bits.h"
+#include "configbits2525.h"
+//#include <plib/i2c.h>
+//#include <plib/delays.h>
+//#include <plib/usart.h>
 //#include <plib/rtcc.h>
+#include <plib/usart.h>
+#include <plib/i2c.h>
 
 #define _XTAL_FREQ 8000000
 #define FOSC       8000000
-#define Baud 100000
+#define Baud 10050
 
-#define LED_VERM PORTDbits.RD7  // Led recebera pisca-pisca via software while
-#define LED_AMAR PORTDbits.RD6  // Led recebera pisca-pisca via software while
-#define LED_VERD1 PORTDbits.RD3  // Led recebera PISCA 1 Segundo via TIMER1 16bit
-#define LED_VERD2 PORTDbits.RD2  // Led recebera PISCA 0,1 Segungo via TIMER0 8bit
-#define LED_AZUL PORTCbits.RC2  //
+/*
+#define LED_VERM    PORTDbits.RD7  // Led recebera pisca-pisca via software while
+#define LED_AMAR    PORTDbits.RD6  // Led recebera pisca-pisca via software while
+#define LED_VERD1   PORTDbits.RD3  // Led recebera PISCA 1 Segundo via TIMER1 16bit
+#define LED_VERD2   PORTDbits.RD2  // Led recebera PISCA 0,1 Segungo via TIMER0 8bit
+#define LED_AZUL    PORTCbits.RC2  //
+*/
+
+#define LED_AMAR    PORTCbits.RC0
+#define LED_VERD    PORTCbits.RC1
+#define LED_VERM    PORTCbits.RC2
+
 
 // 0x5C =  1011100  ; 5C <<1
 // 0xB8 =  10111000
@@ -67,7 +77,7 @@ void readDevice2(void);
 
 //SSPCON1 = 0x28;	// I2C ENB, FOSC / (4 * (SSPADD+1))
 
-int main(int argc, char** argv) {
+void main(void) {
 
     //OSCCONbits.IRCF = 0b111; // clock interno para 8 mhz
     //Oscilador Interno nao tem precisao para gerar Clock I2C
@@ -76,14 +86,26 @@ int main(int argc, char** argv) {
     unsigned char data;
     signed char status;
 
-    int hora, minuto, segundo, diasemana, dia, mes, ano, dummy;
+    int hora=0, minuto=0, segundo=0, diasemana=0, dia=0, mes=0, ano=0, dummy=0;
     int cont=10;
     char msg[40];
 
 
     // Definicao de portas para os LEDs
-    TRISDbits.RD7=0; TRISDbits.RD6=0; TRISDbits.RD3=0; TRISDbits.RD2=0;
-    TRISCbits.RC2=0;
+    //TRISDbits.RD7=0; TRISDbits.RD6=0; TRISDbits.RD3=0; TRISDbits.RD2=0;
+    //TRISCbits.RC2=0;
+
+    TRISCbits.RC0=0;    // LED Amarelo
+    TRISCbits.RC1=0;    // LED Verde
+    TRISCbits.RC2=0;    // LED Vermelho
+    
+    TRISCbits.RC6=1;    // TX da EUSART
+    
+    TRISCbits.RC3=1;    // SCL do I2C
+    TRISCbits.RC4=1;    // SDA do I2C
+
+
+    LED_AMAR=0; LED_VERM=0; LED_VERD=0;
 
     //TRISBbits.RB0=1;    //SDA
     //TRISBbits.RB1=1;    //SCL
@@ -114,39 +136,39 @@ int main(int argc, char** argv) {
      *
      */
 
-    TRISBbits.RB0=0;    //SDA 0=output
-    TRISBbits.RB1=0;    //SCL 0=output
+    //TRISBbits.RB0=0;    //SDA 0=output
+    //TRISBbits.RB1=0;    //SCL 0=output
     //PORTBbits.RB0=0;
     //PORTBbits.RB1=0;
-    LATB0=0x00;     // Workaround para ERRATA
-    LATB1=0x00;
+    //LATB0=0x00;     // Workaround para ERRATA
+    //LATB1=0x00;
 
     
 
     Delay10KTCYx(100);
 
-    TRISBbits.RB0=1;    //SDA 1=input
-    TRISBbits.RB1=1;    //SCL 1=input
+    //TRISBbits.RB0=1;    //SDA 1=input
+    //TRISBbits.RB1=1;    //SCL 1=input
 
     //RBPU=1; // pull up interno desabilitado
     //INTCON2bits.RBPU=1;
 
-    TRISCbits.RC6=0;    // Saida TX EUSART
+    //TRISCbits.RC6=0;    // Saida TX EUSART
     ADCON1=0x0F;              // desabilita todas as portas analogicas e
                               // as torna digitais
     //ADCON1=0x05;            //disable analog inputs on pins 33(RB0/AN12), 34(RB1/AN10) and 37(RB4/AN11)
-    PORTD=0x00; //PORTCbits.RC2=0;
+    //PORTD=0x00; //PORTCbits.RC2=0;
 
     
 
     //SSPCON1bits.SSPEN=1;
-    SSPCON1=0x00;
-    SSPCON2=0x00;
+    //SSPCON1=0x00;
+    //SSPCON2=0x00;
     //SSPSTATbits.SMP = 1;        // desabilita o SLEW RATE CONTROL para 100 khz
     //PIR1bits.PSPIF=0;  // clear SSPIF interrupt flag
     //PIR2bits.BCLIF=0;  // clear bus collision flag
-    SSPSTAT=0x00;
-    CMCON=0x00;
+    //SSPSTAT=0x00;
+    //CMCON=0x00;
 
 
     /*
@@ -187,7 +209,7 @@ int main(int argc, char** argv) {
 
      */
 
-    SSPADD = 0x27; // para 100 khz e clock de 8 mhz
+    //SSPADD = 0x27; // para 100 khz e clock de 8 mhz
 
     //IdleI2C();                    // Wait for the bus get idle
 
@@ -195,7 +217,9 @@ int main(int argc, char** argv) {
     // SSPADD = ( 4.000.000/100.000 )/4 -1
     // SSPADD = ( 40 ) / 4 -1 = 10-1 = 9
 
-    // SSPADD = ((FOSC/4)/Baud)-1;
+    SSPADD = ((FOSC/4)/Baud)-1;
+
+
     //SSPADD =  ( 4000000/4 / 100000) -1;
     //SSPADD =    1.000.000 / 100.000  - 1
     //SSPADD = 10 - 1 = 9
@@ -205,7 +229,7 @@ int main(int argc, char** argv) {
     //  --------- = 20 - 1 = 19
     //    100.000
 
-    SSPADD = 0x27;
+    //SSPADD = 0x27;
     //SSPADD = 19;
 
 
@@ -235,44 +259,126 @@ int main(int argc, char** argv) {
                 putrsUSART( itoa(NULL,SSPADD,16) );
                 putrsUSART(")\n\r");
 
-    
 
-    Delay10KTCYx(100);Delay10KTCYx(100);
 
-    //CloseI2C();
+    LED_VERD=1;
+    Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+    LED_VERD=0;
+
+    CloseI2C();
 
 
     OpenI2C(MASTER,SLEW_OFF);
     //SSPADD = ((FOSC/4)/Baud)-1;
     //SSPCON2bits.SEN = 1;        // Clock stretching is enabled
 
+//#define PAUSA10 Delay10KTCYx(10)
+    /*
+#define PAUSA10 __nop()
+
+    StartI2C(); LED_AMAR=1;
+    
+    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
+    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
+    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
+    AckI2C();PAUSA10;NotAckI2C();PAUSA10;AckI2C();PAUSA10;NotAckI2C();PAUSA10;
+    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
+    CloseI2C(); LED_AMAR=0;
+
+    LED_VERD=1;
+    Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+    LED_VERD=0;
+     */
+
+
+    StartI2C(); LED_AMAR=1;
+        //AckI2C();
+        __delay_us(30);
+        WriteI2C(0x40);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        WriteI2C(0b00110011);
+        __delay_us(30);
+        //AckI2C();
+    StopI2C(); LED_AMAR=0;
+
+
+    LED_VERD=1;
+    Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+    LED_VERD=0;
+
+
+
     while ( cont>=0 )
     {
-    LED_AMAR = 1;
+    LED_AMAR=1;
 
     IdleI2C();
     StartI2C();
         //IdleI2C();
+        __delay_us(16);
         WriteI2C( 0xD0 );
         //IdleI2C();
+        __delay_us(60);
         WriteI2C( 0x00 );
-        //IdleI2C();
-        //AckI2C();
+        IdleI2C();
+        __delay_us(16);
+        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
     StopI2C();
 
     LED_VERM = 1;
 
     IdleI2C();
-    LED_AZUL=1;
-    
-    StartI2C();
-    //IdleI2C();
-        WriteI2C( 0xD1 );
-        IdleI2C();
+    //LED_AZUL=1;
 
+         RestartI2C();                  // Start condition I2C on bus
+             IdleI2C();
+             WriteI2C( 0xD1 );            // addresses the chip with a read bit
+
+             dummy = ReadI2C();          // read the value from the RTC and store in result
+
+             dummy = ReadI2C();          // read the value from the RTC and store in result
+
+             NotAckI2C();                 // Not Acknowledge condition.
+             IdleI2C();
+     StopI2C();
+
+
+     IdleI2C();
+
+     sprintf(msg,"1 valor= %i\r\n",dummy);
+     while(BusyUSART()); putsUSART( msg );
+
+    IdleI2C();
+    RestartI2C();
+        //IdleI2C();
+        __delay_us(16);
+        WriteI2C( 0xD0 );
+        //IdleI2C();
+        __delay_us(60);
+        WriteI2C( 0x00 );
+        IdleI2C();
+        __delay_us(16);
+        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
+    StopI2C();
+
+    IdleI2C();
+
+    RestartI2C();
+    //IdleI2C();
+        __delay_us(16);
+        WriteI2C( 0xD1 );
         LED_AMAR = 0;
         //while(!DataRdyI2C()) LED_VERM=~LED_VERM;
 
+        //AckI2C();
         hora=ReadI2C();
         minuto=ReadI2C();
         segundo=ReadI2C();
@@ -281,10 +387,12 @@ int main(int argc, char** argv) {
         mes=ReadI2C();
         ano=ReadI2C();
         dummy=ReadI2C();
+        __delay_us(16);
+        IdleI2C();
         //NotAckI2C();
         //IdleI2C();
     StopI2C();
-    LED_AZUL=0;
+    //LED_AZUL=0;
 
     LED_VERM = 0;
     
@@ -336,9 +444,9 @@ int main(int argc, char** argv) {
 	while(status!=0);		//write untill successful communication
      */
 
-        LED_VERM=0; LED_AMAR=0; LED_VERD1=1;
+        LED_VERM=0; LED_AMAR=0; LED_VERD=1;
         Delay10KTCYx(50);
-        LED_VERD1=0;
+        LED_VERD=0;
 
     // ---//---
 
@@ -453,9 +561,10 @@ void ciclo (void)
         LED_VERM=1;
 
         while(BusyUSART());
-        putrsUSART("\r\n____START I2C.\n\r");
+        putrsUSART("____START I2C.\n\r");
 
         StartI2C();             // ACORDAR DEVICE
+        __delay_us(16);
             WriteI2C(0xB8);     // endereco Slave do AM2315
             //WriteI2C(0x03);     // byte que simboliza a temperatura
             //WriteI2C(0x00);     // start byte para leitura
@@ -473,11 +582,16 @@ void ciclo (void)
 
 
         RestartI2C();             // REQUISITAR PEDIDO DE BYTES
+        __delay_us(16);
             WriteI2C(0xB8);     // endereco Slave do AM2315
+            __delay_us(100);
             WriteI2C(0x03);     // byte que simboliza a temperatura
+            __delay_us(60);
             WriteI2C(0x00);     // start byte para leitura
-            WriteI2C(0x04);     // quantidades de bytes a serem lidos;
+            __delay_us(60);
+            WriteI2C(0x02);     // quantidades de bytes a serem lidos;
             //AckI2C();
+            __delay_us(16);
         StopI2C();
 
         //AckI2C();
@@ -487,23 +601,28 @@ void ciclo (void)
 
         RestartI2C();
         WriteI2C(0xB9);     // endereco Slave do AM2315
-        //__delay_us(39);
+        __delay_us(100);
 
         OP          = ReadI2C();        // 1 byte
+        __delay_us(60);
         BT          = ReadI2C();        // 2 byte
+        __delay_us(60);
             TEMPL       = ReadI2C();    // 3 byte
+            __delay_us(60);
             TEMPH       = ReadI2C();    // 4 byte
-            PRESSAOL    = ReadI2C();    // 5 byte
-            PRESSAOH    = ReadI2C();    // 6 byte
-        DUMMY          = ReadI2C();     // 7 byte
-        DUMMY          = ReadI2C();     // 8 byte
+      //      PRESSAOL    = ReadI2C();    // 5 byte
+      //      PRESSAOH    = ReadI2C();    // 6 byte
+      //  DUMMY          = ReadI2C();     // 7 byte
+      //  DUMMY          = ReadI2C();     // 8 byte
+        __delay_us(16);
         StopI2C();
 
         //AckI2C();
 
 
-        LED_VERM=0; LED_AMAR=0;LED_VERD1=0;LED_VERD2=0;
-        LED_AZUL=1;
+        LED_VERM=0; LED_AMAR=0;LED_VERD=0;
+        //LED_VERD2=0;
+        //LED_AZUL=1;
 
         sprintf (msg, "OP=%2.2X BT=%2.2X PL=%2.2X %2.2X TL=%2.2X %2.4X Dy=%2.4X \r\n",OP,BT,PRESSAOH,PRESSAOL,TEMPL,TEMPH,DUMMY);
         //printf ("TEMPL = 0x%2.2X TEMPH= 0x%2.2X \r ",TEMPL,TEMPH);
@@ -514,7 +633,7 @@ void ciclo (void)
 
         //,
 
-        Delay10KTCYx(100); LED_AZUL=0;
+        Delay10KTCYx(100); //LED_AZUL=0;
         while(BusyUSART());
         putrsUSART("\n\r");
         Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
