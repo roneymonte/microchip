@@ -11,20 +11,23 @@
  * Versao 0.2c - 25mar2014 - I2C/SCL nao funcionam de jeito nenhum.
  *               adicionado RTC com circuito DS1307, e tambem nao funciona.
  *               obs: usando um Arduino, tudo funciona normalmente, sem dor.
+ * Versao 0.2d - cada vez pior
  *
  */
 
+#include <pic18f4550.h>
 #include <xc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "config_bits.h"
 #include <plib/i2c.h>
+#include <plib/delays.h>
 #include <plib/usart.h>
 //#include <plib/rtcc.h>
 
 #define _XTAL_FREQ 8000000
-#define FOSC 8000000UL
+#define FOSC       8000000
 #define Baud 100000
 
 #define LED_VERM PORTDbits.RD7  // Led recebera pisca-pisca via software while
@@ -82,27 +85,96 @@ int main(int argc, char** argv) {
     TRISDbits.RD7=0; TRISDbits.RD6=0; TRISDbits.RD3=0; TRISDbits.RD2=0;
     TRISCbits.RC2=0;
 
-    TRISBbits.RB0=1;    //SDA
-    TRISBbits.RB1=1;    //SCL
+    //TRISBbits.RB0=1;    //SDA
+    //TRISBbits.RB1=1;    //SCL
+
+    //PORTB=0x00;
+
+    /*
+     * 17. Module: MSSP
+     *  It has been observed that following a Power-on Reset, I2C mode may not
+     *  initialize properly by just configuring the SCL and SDA pins as either
+     *  inputs or outputs. This has only been seen in a few unique system
+     *  environments. A test of a statistically significant sample of pre-
+     *  production systems, across the voltage and current range of the
+     *  application's power supply, should indicate if a system is
+     *  susceptible to this issue.
+     *
+     * Work around
+     *
+     * Before configuring the module for I2C operation:
+     * 1. Configure the SCL and SDA pins as outputs by clearing
+     *  their corresponding TRIS bits.
+     * 2. Force SCL and SDA low by clearing the corresponding LAT bits.
+     * 3. While keeping the LAT bits clear, configure SCL and SDA as
+     *  inputs by setting their TRIS bits.
+     *
+     * Once this is done, use the SSPCON1 and SSPCON2 registers to
+     *  configure the proper I2C mode as before.
+     *
+     */
+
+    TRISBbits.RB0=0;    //SDA 0=output
+    TRISBbits.RB1=0;    //SCL 0=output
+    //PORTBbits.RB0=0;
+    //PORTBbits.RB1=0;
+    LATB0=0x00;     // Workaround para ERRATA
+    LATB1=0x00;
+
+    
+
+    Delay10KTCYx(100);
+
+    TRISBbits.RB0=1;    //SDA 1=input
+    TRISBbits.RB1=1;    //SCL 1=input
+
+    //RBPU=1; // pull up interno desabilitado
+    //INTCON2bits.RBPU=1;
 
     TRISCbits.RC6=0;    // Saida TX EUSART
+    ADCON1=0x0F;              // desabilita todas as portas analogicas e
+                              // as torna digitais
+    //ADCON1=0x05;            //disable analog inputs on pins 33(RB0/AN12), 34(RB1/AN10) and 37(RB4/AN11)
+    PORTD=0x00; //PORTCbits.RC2=0;
 
-    ADCON1=0x0F;
+    
 
-    PORTD=0x00; PORTCbits.RC2=0;
-
-    SSPCON1bits.SSPEN=1;
+    //SSPCON1bits.SSPEN=1;
+    SSPCON1=0x00;
     SSPCON2=0x00;
-
+    //SSPSTATbits.SMP = 1;        // desabilita o SLEW RATE CONTROL para 100 khz
+    //PIR1bits.PSPIF=0;  // clear SSPIF interrupt flag
+    //PIR2bits.BCLIF=0;  // clear bus collision flag
+    SSPSTAT=0x00;
     CMCON=0x00;
 
 
+    /*
+ 
 
-CKE=0;  // use I2C levels worked also with '0'
-SMP=1;  // disable slew rate control worked also with '0'
-PSPIF=0;  // clear SSPIF interrupt flag
-BCLIF=0;  // clear bus collision flag
+    SSPSTATbits.CKE=0;  // use I2C levels worked also with '0'
 
+    SSPSTATbits.SMP=1;  // disable slew rate control worked also with '0'
+    PIR1bits.PSPIF=0;  // clear SSPIF interrupt flag
+    PIR2bits.BCLIF=0;  // clear bus collision flag
+
+    PIR1bits.SSPIF = 0;                  // Clear the serial port interrupt flag
+    PIR2bits.BCLIF = 0;                  // Clear the bus collision interrupt flag
+                                         // limpa o flag de COLISAO do barramento
+    PIE2bits.BCLIE = 1;                  // Enable bus collision interrupts
+    PIE1bits.SSPIE = 1;                  // Enable serial port interrupts
+
+    INTCONbits.PEIE = 1;                   // Enable peripheral interrupts
+    INTCONbits.GIE = 1;                     // Enable global interrupts
+    INTCONbits.GIE_GIEH  = 1;       // GIE/GIEH: Global Interrupt Enable bit
+    INTCONbits.PEIE_GIEL = 1;       // PEIE/GIEL: Peripheral Interrupt Enable bi
+
+    PIR1bits.SSPIF = 0;             // Clear MSSP interrupt request flag
+                                    // limpa o flag de interrupcao SSPIF
+    PIE1bits.SSPIE = 1;             // Enable MSSP interrupt enable bit
+
+    SSPCON2bits.SEN = 1;        // Clock stretching is enabled
+    //SSPCON1bits.CKP = 1;            // release CLK
 
     SSPCON1        = 0x36;          // SSPEN: Synchronous Serial Port Enable bit - Enables the serial port and configures the SDA and SCL pins as the serial port pins
                                     // CKP: SCK Release Control bit              - Release clock
@@ -110,25 +182,20 @@ BCLIF=0;  // clear bus collision flag
     SSPSTAT        = 0x00;
     //SSPCON2        = 0x01;          // GCEN: General Call address (00h) (Slave mode only) 0 = General call address disabled
                                     // SEN: Start Condition Enable/Stretch Enable bit(1) ()Slave mode) 1 = Clock stretching is enabled
-    PIR1bits.SSPIF = 0;             // Clear MSSP interrupt request flag
-    PIE1bits.SSPIE = 1;             // Enable MSSP interrupt enable bi
-    INTCONbits.GIE_GIEH  = 1;       // GIE/GIEH: Global Interrupt Enable bit
-    INTCONbits.PEIE_GIEL = 1;       // PEIE/GIEL: Peripheral Interrupt Enable bi
+    
+    SSPSTATbits.SMP = 1;        // desabilita o SLEW RATE CONTROL para 100 khz
 
+     */
 
-    //SSPADD = 0x27; // para 100 khz e clock de 8 mhz
+    SSPADD = 0x27; // para 100 khz e clock de 8 mhz
 
-    SMP = 1;        // disabilita o SLEW RATE CONTROL para 100 khz
+    //IdleI2C();                    // Wait for the bus get idle
 
-    SSPIF=0;        // limpa o flag de interrupcao SSPIF
-    BCLIF=0;        // limpa o flag de COLISAO do barrament
-
-
-    // SSPADD = (FOSC/ Bit Rate) /4 - 1
+    // SSPADD = (( FOSC/ Bit Rate) /4 ) - 1;
     // SSPADD = ( 4.000.000/100.000 )/4 -1
     // SSPADD = ( 40 ) / 4 -1 = 10-1 = 9
 
-    //SSPADD = ((FOSC/4)/Baud)-1;
+    // SSPADD = ((FOSC/4)/Baud)-1;
     //SSPADD =  ( 4000000/4 / 100000) -1;
     //SSPADD =    1.000.000 / 100.000  - 1
     //SSPADD = 10 - 1 = 9
@@ -138,7 +205,8 @@ BCLIF=0;  // clear bus collision flag
     //  --------- = 20 - 1 = 19
     //    100.000
 
-    SSPADD = 19;
+    SSPADD = 0x27;
+    //SSPADD = 19;
 
 
 
@@ -167,39 +235,43 @@ BCLIF=0;  // clear bus collision flag
                 putrsUSART( itoa(NULL,SSPADD,16) );
                 putrsUSART(")\n\r");
 
-    LED_VERM = 1;
+    
 
     Delay10KTCYx(100);Delay10KTCYx(100);
 
+    //CloseI2C();
+
+
     OpenI2C(MASTER,SLEW_OFF);
-    SSPADD=19;
-
-
-    
+    //SSPADD = ((FOSC/4)/Baud)-1;
+    //SSPCON2bits.SEN = 1;        // Clock stretching is enabled
 
     while ( cont>=0 )
-
     {
-
+    LED_AMAR = 1;
 
     IdleI2C();
     StartI2C();
-    IdleI2C();
+        //IdleI2C();
         WriteI2C( 0xD0 );
-        IdleI2C();
+        //IdleI2C();
         WriteI2C( 0x00 );
-
-        IdleI2C();
+        //IdleI2C();
         //AckI2C();
     StopI2C();
 
+    LED_VERM = 1;
+
     IdleI2C();
-    RestartI2C();
-    IdleI2C();
+    LED_AZUL=1;
+    
+    StartI2C();
+    //IdleI2C();
         WriteI2C( 0xD1 );
         IdleI2C();
 
-        while(!DataRdyI2C());
+        LED_AMAR = 0;
+        //while(!DataRdyI2C()) LED_VERM=~LED_VERM;
 
         hora=ReadI2C();
         minuto=ReadI2C();
@@ -209,18 +281,34 @@ BCLIF=0;  // clear bus collision flag
         mes=ReadI2C();
         ano=ReadI2C();
         dummy=ReadI2C();
-        NotAckI2C();
-        IdleI2C();
+        //NotAckI2C();
+        //IdleI2C();
     StopI2C();
+    LED_AZUL=0;
+
+    LED_VERM = 0;
+    
+    while(BusyUSART());
+                putrsUSART("SSPAD=");
+                while(BusyUSART());
+                putsUSART( itoa(NULL,SSPADD,10) );
 
     Delay10KTCYx(100);Delay10KTCYx(100);
-    sprintf(msg,"%i,%i,%i,%i,%i,%i,%i,%i\r\n", hora,minuto,segundo,diasemana,
+    sprintf(msg," __%i,%i,%i,%i,%i,%i,%i,%i\r\n", hora,minuto,segundo,diasemana,
             dia,mes,ano,dummy);
 
     while(BusyUSART());
                 putsUSART( msg );
 
-
+/*
+       if(BCLIF)                       // Did a bus collision occur?
+        {
+            junk = SSPBUF;              // clear SSPBUF
+            BCLIF = 0;                  // clear BCLIF
+            SSPCON1bits.CKP = 1;        // Release CLK
+        }
+        SSPIF = 0;                      // clear SSPIF
+*/
 
 
 
@@ -228,7 +316,7 @@ BCLIF=0;  // clear bus collision flag
     Delay10KTCYx(100);Delay10KTCYx(100);
     }
 
-    LED_AMAR = 1;
+    LED_AMAR = 0;
     Delay10KTCYx(50);
     //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
 
