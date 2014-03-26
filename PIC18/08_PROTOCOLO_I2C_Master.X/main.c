@@ -100,12 +100,34 @@ void main(void) {
     TRISCbits.RC2=0;    // LED Vermelho
     
     TRISCbits.RC6=1;    // TX da EUSART
-    
+
+    TRISCbits.RC3=0;    // SCL do I2C
+    TRISCbits.RC4=0;    // SDA do I2C
+    LATC3=0;
+    LATC4=0;
+
+    Delay10KTCYx(10);
+
     TRISCbits.RC3=1;    // SCL do I2C
     TRISCbits.RC4=1;    // SDA do I2C
 
 
-    LED_AMAR=0; LED_VERM=0; LED_VERD=0;
+    LED_AMAR=0; LED_VERM=1; LED_VERD=0;
+
+    CMCON = 0;
+
+    INTCON = 0;
+    SSPCON2= 0x00;
+    //SSPADD = 0x13;  // ou (19 dec) para 100 khz e clock de 8 mhz (AcePic28)
+
+    SMP = 1;        // desabilita o SLEW RATE CONTROL para 100 khz
+
+    SSPIF=0;        // limpa o flag de interrupcao SSPIF
+    BCLIF=0;        // limpa o flag de COLISAO do barramento
+
+    PEIE=0;
+    GIE=0;
+
 
     //TRISBbits.RB0=1;    //SDA
     //TRISBbits.RB1=1;    //SCL
@@ -145,7 +167,7 @@ void main(void) {
 
     
 
-    Delay10KTCYx(100);
+    //Delay10KTCYx(100);
 
     //TRISBbits.RB0=1;    //SDA 1=input
     //TRISBbits.RB1=1;    //SCL 1=input
@@ -233,6 +255,7 @@ void main(void) {
     //SSPADD = 19;
 
 
+    LED_VERM=0;
 
     CloseUSART();   // fecha qualquer USART que estaria supostamente aberta antes
                     // just closes any previous USART open port
