@@ -12,7 +12,9 @@
  *               adicionado RTC com circuito DS1307, e tambem nao funciona.
  *               obs: usando um Arduino, tudo funciona normalmente, sem dor.
  * Versao 0.2d - cada vez pior
- * Verdao 0.2e - constatados problemas na PIC18F4550, trocada pela PIC18F2525
+ * Versao 0.2e - constatados problemas na PIC18F4550, trocada pela PIC18F2525
+ * Versao 0.2f - com a PIC18F2525 medindo niveis de ruido e oscilacao
+ *               na alimentacao eletrica via USB, agora com capacitores
  *
  */
 
@@ -87,7 +89,7 @@ void main(void) {
     signed char status;
 
     int hora=0, minuto=0, segundo=0, diasemana=0, dia=0, mes=0, ano=0, dummy=0;
-    int cont=10;
+    int cont=9999;
     char msg[40];
 
 
@@ -353,31 +355,25 @@ void main(void) {
         WriteI2C( 0x00 );
         IdleI2C();
         __delay_us(16);
-        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
     StopI2C();
 
     LED_VERM = 1;
-
     IdleI2C();
-    //LED_AZUL=1;
 
          RestartI2C();                  // Start condition I2C on bus
              IdleI2C();
              WriteI2C( 0xD1 );            // addresses the chip with a read bit
-
              dummy = ReadI2C();          // read the value from the RTC and store in result
-
-             dummy = ReadI2C();          // read the value from the RTC and store in result
-
+             //dummy = ReadI2C();          // read the value from the RTC and store in result
              NotAckI2C();                 // Not Acknowledge condition.
              IdleI2C();
      StopI2C();
-
-
      IdleI2C();
 
-     sprintf(msg,"1 valor= %i\r\n",dummy);
+     sprintf(msg,"1o valor= %i\r\n",dummy);
      while(BusyUSART()); putsUSART( msg );
+
+     Delay10KTCYx(100);
 
     IdleI2C();
     RestartI2C();
@@ -395,37 +391,34 @@ void main(void) {
     IdleI2C();
 
     RestartI2C();
-    //IdleI2C();
         __delay_us(16);
         WriteI2C( 0xD1 );
         LED_AMAR = 0;
         //while(!DataRdyI2C()) LED_VERM=~LED_VERM;
-
-        //AckI2C();
-        hora=ReadI2C();
-        minuto=ReadI2C();
-        segundo=ReadI2C();
+        hora    =ReadI2C();
+        minuto  =ReadI2C();
+        segundo =ReadI2C();
         diasemana=ReadI2C();
-        dia=ReadI2C();
-        mes=ReadI2C();
-        ano=ReadI2C();
-        dummy=ReadI2C();
+        dia     =ReadI2C();
+        mes     =ReadI2C();
+        ano     =ReadI2C();
+        dummy   =ReadI2C();
         __delay_us(16);
         IdleI2C();
         //NotAckI2C();
         //IdleI2C();
     StopI2C();
-    //LED_AZUL=0;
+
 
     LED_VERM = 0;
     
     while(BusyUSART());
-                putrsUSART("SSPAD=");
+                putrsUSART("SSPAD=0x");
                 while(BusyUSART());
-                putsUSART( itoa(NULL,SSPADD,10) );
+                putsUSART( itoa(NULL,SSPADD,16) );
 
-    Delay10KTCYx(100);Delay10KTCYx(100);
-    sprintf(msg," __%i,%i,%i,%i,%i,%i,%i,%i\r\n", hora,minuto,segundo,diasemana,
+    
+    sprintf(msg,"(%d) __ %x,%x,%x,%x,%x,%x,%x,%x\r\n", SSPADD,hora,minuto,segundo,diasemana,
             dia,mes,ano,dummy);
 
     while(BusyUSART());
@@ -444,7 +437,7 @@ void main(void) {
 
 
     cont--;
-    Delay10KTCYx(100);Delay10KTCYx(100);
+    Delay10KTCYx(100);
     }
 
     LED_AMAR = 0;
