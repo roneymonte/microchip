@@ -15,6 +15,9 @@
  * Versao 0.2e - constatados problemas na PIC18F4550, trocada pela PIC18F2525
  * Versao 0.2f - com a PIC18F2525 medindo niveis de ruido e oscilacao
  *               na alimentacao eletrica via USB, agora com capacitores
+ * Versao 0.3  - FINALMENTE FUNCIONANDO, descoberta a falta de ACK na leitura
+ *               dos bytes dos dispositivos SLAVEs I2C; Colocando o AckI2C() e
+ *               o IdleI2C() resolveu-se o problema. Simples ?
  *
  */
 
@@ -32,8 +35,8 @@
 #include <plib/i2c.h>
 
 #define _XTAL_FREQ 8000000
-#define FOSC       8000000
-#define Baud 10050
+#define FOSC       8000000UL
+#define Baud 100000
 
 /*
 #define LED_VERM    PORTDbits.RD7  // Led recebera pisca-pisca via software while
@@ -71,6 +74,7 @@
 
 void ciclo (void);
 void readDevice2(void);
+void getDS1307(void);
 
 
 /*
@@ -88,9 +92,7 @@ void main(void) {
     unsigned char data;
     signed char status;
 
-    int hora=0, minuto=0, segundo=0, diasemana=0, dia=0, mes=0, ano=0, dummy=0;
-    int cont=9999;
-    char msg[40];
+    
 
 
     // Definicao de portas para os LEDs
@@ -285,11 +287,6 @@ void main(void) {
                 putrsUSART(")\n\r");
 
 
-
-    LED_VERD=1;
-    Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
-    LED_VERD=0;
-
     CloseI2C();
 
 
@@ -297,150 +294,9 @@ void main(void) {
     //SSPADD = ((FOSC/4)/Baud)-1;
     //SSPCON2bits.SEN = 1;        // Clock stretching is enabled
 
-//#define PAUSA10 Delay10KTCYx(10)
-    /*
-#define PAUSA10 __nop()
 
-    StartI2C(); LED_AMAR=1;
-    
-    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
-    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
-    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
-    AckI2C();PAUSA10;NotAckI2C();PAUSA10;AckI2C();PAUSA10;NotAckI2C();PAUSA10;
-    AckI2C();PAUSA10;NotAckI2C();PAUSA10;
-    CloseI2C(); LED_AMAR=0;
+   
 
-    LED_VERD=1;
-    Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
-    LED_VERD=0;
-     */
-
-
-    StartI2C(); LED_AMAR=1;
-        //AckI2C();
-        __delay_us(30);
-        WriteI2C(0x40);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        WriteI2C(0b00110011);
-        __delay_us(30);
-        //AckI2C();
-    StopI2C(); LED_AMAR=0;
-
-
-    LED_VERD=1;
-    Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
-    LED_VERD=0;
-
-
-
-    while ( cont>=0 )
-    {
-    LED_AMAR=1;
-
-    IdleI2C();
-    StartI2C();
-        //IdleI2C();
-        __delay_us(16);
-        WriteI2C( 0xD0 );
-        //IdleI2C();
-        __delay_us(60);
-        WriteI2C( 0x00 );
-        IdleI2C();
-        __delay_us(16);
-    StopI2C();
-
-    LED_VERM = 1;
-    IdleI2C();
-
-         RestartI2C();                  // Start condition I2C on bus
-             IdleI2C();
-             WriteI2C( 0xD1 );            // addresses the chip with a read bit
-             dummy = ReadI2C();          // read the value from the RTC and store in result
-             //dummy = ReadI2C();          // read the value from the RTC and store in result
-             NotAckI2C();                 // Not Acknowledge condition.
-             IdleI2C();
-     StopI2C();
-     IdleI2C();
-
-     sprintf(msg,"1o valor= %i\r\n",dummy);
-     while(BusyUSART()); putsUSART( msg );
-
-     Delay10KTCYx(100);
-
-    IdleI2C();
-    RestartI2C();
-        //IdleI2C();
-        __delay_us(16);
-        WriteI2C( 0xD0 );
-        //IdleI2C();
-        __delay_us(60);
-        WriteI2C( 0x00 );
-        IdleI2C();
-        __delay_us(16);
-        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
-    StopI2C();
-
-    IdleI2C();
-
-    RestartI2C();
-        __delay_us(16);
-        WriteI2C( 0xD1 );
-        LED_AMAR = 0;
-        //while(!DataRdyI2C()) LED_VERM=~LED_VERM;
-        hora    =ReadI2C();
-        minuto  =ReadI2C();
-        segundo =ReadI2C();
-        diasemana=ReadI2C();
-        dia     =ReadI2C();
-        mes     =ReadI2C();
-        ano     =ReadI2C();
-        dummy   =ReadI2C();
-        __delay_us(16);
-        IdleI2C();
-        //NotAckI2C();
-        //IdleI2C();
-    StopI2C();
-
-
-    LED_VERM = 0;
-    
-    while(BusyUSART());
-                putrsUSART("SSPAD=0x");
-                while(BusyUSART());
-                putsUSART( itoa(NULL,SSPADD,16) );
-
-    
-    sprintf(msg,"(%d) __ %x,%x,%x,%x,%x,%x,%x,%x\r\n", SSPADD,hora,minuto,segundo,diasemana,
-            dia,mes,ano,dummy);
-
-    while(BusyUSART());
-                putsUSART( msg );
-
-/*
-       if(BCLIF)                       // Did a bus collision occur?
-        {
-            junk = SSPBUF;              // clear SSPBUF
-            BCLIF = 0;                  // clear BCLIF
-            SSPCON1bits.CKP = 1;        // Release CLK
-        }
-        SSPIF = 0;                      // clear SSPIF
-*/
-
-
-
-    cont--;
-    Delay10KTCYx(100);
-    }
-
-    LED_AMAR = 0;
     Delay10KTCYx(50);
     //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
 
@@ -561,8 +417,10 @@ void readDevice2(void){
 
 void ciclo (void)
 {
-    unsigned char TEMPL=0, TEMPH=0, PRESSAOL=0, PRESSAOH=0;
+    unsigned char TEMPL=0, TEMPH=0, HUMIDL=0, HUMIDH=0;
     unsigned char DUMMY=0, OP=0, BT=0;
+    float humidade, temperatura;
+
     char msg[55];
 
     Delay10KTCYx(100); //Passing 0 (zero) results in a delay of 2,560,000 cycles
@@ -576,8 +434,10 @@ void ciclo (void)
         //OpenI2C(MASTER,SLEW_OFF);
         LED_VERM=1;
 
-        while(BusyUSART());
-        putrsUSART("____START I2C.\n\r");
+        //while(BusyUSART());
+        //putrsUSART("____START I2C.\n\r");
+
+        getDS1307();
 
         StartI2C();             // ACORDAR DEVICE
         __delay_us(16);
@@ -600,12 +460,18 @@ void ciclo (void)
         RestartI2C();             // REQUISITAR PEDIDO DE BYTES
         __delay_us(16);
             WriteI2C(0xB8);     // endereco Slave do AM2315
-            __delay_us(100);
+            __delay_us(60);
+
+
             WriteI2C(0x03);     // byte que simboliza a temperatura
             __delay_us(60);
+
+
             WriteI2C(0x00);     // start byte para leitura
             __delay_us(60);
-            WriteI2C(0x02);     // quantidades de bytes a serem lidos;
+
+
+            WriteI2C(0x04);     // quantidades de bytes a serem lidos;
             //AckI2C();
             __delay_us(16);
         StopI2C();
@@ -617,20 +483,40 @@ void ciclo (void)
 
         RestartI2C();
         WriteI2C(0xB9);     // endereco Slave do AM2315
-        __delay_us(100);
+        AckI2C();
+        IdleI2C();
 
         OP          = ReadI2C();        // 1 byte
-        __delay_us(60);
+        AckI2C();
+        IdleI2C();
+
         BT          = ReadI2C();        // 2 byte
-        __delay_us(60);
-            TEMPL       = ReadI2C();    // 3 byte
-            __delay_us(60);
-            TEMPH       = ReadI2C();    // 4 byte
-      //      PRESSAOL    = ReadI2C();    // 5 byte
-      //      PRESSAOH    = ReadI2C();    // 6 byte
-      //  DUMMY          = ReadI2C();     // 7 byte
-      //  DUMMY          = ReadI2C();     // 8 byte
-        __delay_us(16);
+        AckI2C();
+        IdleI2C();
+
+            HUMIDL       = ReadI2C();    // 3 byte
+            AckI2C();
+            IdleI2C();
+
+            HUMIDH       = ReadI2C();    // 4 byte
+            AckI2C();
+        IdleI2C();
+
+            TEMPL    = ReadI2C();    // 5 byte
+            AckI2C();
+        IdleI2C();
+
+            TEMPH    = ReadI2C();    // 6 byte
+            AckI2C();
+        IdleI2C();
+
+        DUMMY          = ReadI2C();     // 7 byte
+        AckI2C();
+        IdleI2C();
+
+        DUMMY          = ReadI2C();     // 8 byte
+
+        //__delay_us(16);
         StopI2C();
 
         //AckI2C();
@@ -640,8 +526,19 @@ void ciclo (void)
         //LED_VERD2=0;
         //LED_AZUL=1;
 
-        sprintf (msg, "OP=%2.2X BT=%2.2X PL=%2.2X %2.2X TL=%2.2X %2.4X Dy=%2.4X \r\n",OP,BT,PRESSAOH,PRESSAOL,TEMPL,TEMPH,DUMMY);
+        humidade  = HUMIDL;
+        humidade *= 256;
+        humidade += HUMIDH;
+        humidade /= 10;
+        
+        temperatura  = TEMPL;
+        temperatura *= 256;
+        temperatura += TEMPH;
+        temperatura /= 10;
+
+        //sprintf (msg, "OP=%2.2X BT=%2.2X PL=%2.2X %2.2X TL=%2.2X %2.4X Dy=%2.4X \r\n",OP,BT,PRESSAOH,PRESSAOL,TEMPL,TEMPH,DUMMY);
         //printf ("TEMPL = 0x%2.2X TEMPH= 0x%2.2X \r ",TEMPL,TEMPH);
+        sprintf (msg, "Temperatura= %f, Humidade= %f .", temperatura, humidade);
 
         while(BusyUSART());
         //putrsUSART(msg);
@@ -652,8 +549,35 @@ void ciclo (void)
         Delay10KTCYx(100); //LED_AZUL=0;
         while(BusyUSART());
         putrsUSART("\n\r");
+        
         Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
         Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
+
 
         /*Delay10KTCYx(100);Delay10KTCYx(100);Delay10KTCYx(100);
         Delay10KTCYx(100);Delay10KTCYx(100);*/
@@ -662,4 +586,86 @@ void ciclo (void)
 
 
 
+}
+
+void getDS1307(void)
+{
+    int hora=0, minuto=0, segundo=0, diasemana=0, dia=0, mes=0, ano=0, dummy=0;
+    char msg[40];
+
+
+    IdleI2C();
+    RestartI2C();
+        //IdleI2C();
+        __delay_us(16);
+        WriteI2C( 0xD0 );
+        //IdleI2C();
+        __delay_us(60);
+        WriteI2C( 0x00 );
+        IdleI2C();
+        __delay_us(16);
+        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
+    StopI2C();
+
+    //IdleI2C();
+    __delay_us(26);
+
+    RestartI2C();
+        __delay_us(16);
+        WriteI2C( 0xD1 );
+        //LED_AMAR = 0;
+        //while(!DataRdyI2C()) LED_VERM=~LED_VERM;
+        __delay_us(1);
+        IdleI2C();
+
+        segundo    =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        minuto  =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        hora =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        diasemana=ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        dia     =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        mes     =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        ano     =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        dummy   =ReadI2C();
+        //AckI2C();
+        //__delay_us(16);
+        //IdleI2C();
+        //NotAckI2C();
+        //IdleI2C();
+    StopI2C();
+
+
+    LED_VERM = 0;
+
+    while(BusyUSART());
+                putrsUSART("SSPAD=0x");
+                while(BusyUSART());
+                putsUSART( itoa(NULL,SSPADD,16) );
+
+
+    sprintf(msg,"(%d) __ %xh:%xm:,%xs _ dia %x/%x/%x\r\n", SSPADD,hora,minuto,segundo,
+            dia,mes,ano);
+
+    while(BusyUSART());
+                putsUSART( msg );
 }
