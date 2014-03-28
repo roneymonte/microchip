@@ -18,6 +18,8 @@
  * Versao 0.3  - FINALMENTE FUNCIONANDO, descoberta a falta de ACK na leitura
  *               dos bytes dos dispositivos SLAVEs I2C; Colocando o AckI2C() e
  *               o IdleI2C() resolveu-se o problema. Simples ?
+ * Versao 0.3b - Publicando comentarios sobre os configuracoes de inicializacao
+ *               e sobre os REGISTRADORES e seus VETORES de configuracao
  *
  */
 
@@ -25,12 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "config_bits.h"
-#include "configbits2525.h"
-//#include <plib/i2c.h>
-//#include <plib/delays.h>
-//#include <plib/usart.h>
-//#include <plib/rtcc.h>
+#include "configbits2525.h"     // outro arquivo config_bits.h para PIC18F4550
+#include <plib/delays.h>
 #include <plib/usart.h>
 #include <plib/i2c.h>
 
@@ -38,23 +36,13 @@
 #define FOSC       8000000UL
 #define Baud 100000
 
-/*
-#define LED_VERM    PORTDbits.RD7  // Led recebera pisca-pisca via software while
-#define LED_AMAR    PORTDbits.RD6  // Led recebera pisca-pisca via software while
-#define LED_VERD1   PORTDbits.RD3  // Led recebera PISCA 1 Segundo via TIMER1 16bit
-#define LED_VERD2   PORTDbits.RD2  // Led recebera PISCA 0,1 Segungo via TIMER0 8bit
-#define LED_AZUL    PORTCbits.RC2  //
-*/
-
 #define LED_AMAR    PORTCbits.RC0
 #define LED_VERD    PORTCbits.RC1
 #define LED_VERM    PORTCbits.RC2
 
 
-// 0x5C =  1011100  ; 5C <<1
-// 0xB8 =  10111000
 
-/*
+/*      ** funcoes e comandos do Protocolo I2C (plib) - Compilador XC8 **
         AckI2C      :   Generate I2C? bus Acknowledgecondition.
         CloseI2C    :   Disable the SSP module.
         DataRdyI2C  :   Is the data available in the I2C buffer?
@@ -73,7 +61,6 @@
  */
 
 void ciclo (void);
-void readDevice2(void);
 void getDS1307(void);
 
 
@@ -81,65 +68,25 @@ void getDS1307(void);
  *
  */
 
-//SSPCON1 = 0x28;	// I2C ENB, FOSC / (4 * (SSPADD+1))
-
 void main(void) {
 
-    //OSCCONbits.IRCF = 0b111; // clock interno para 8 mhz
-    //Oscilador Interno nao tem precisao para gerar Clock I2C
-    // Nao deve ser utilizado
+    //OSCCONbits.IRCF = 0b111; // definir clock interno para 8 mhz
+    //O Oscilador Interno (INTRC) nao tem precisao para gerar Clock I2C
+    //Recomenda-se usar um Oscilador Externo (cristal) para maior precisao
+    //Para se usar o INTRC (Oscilador Interno) deve-se mudar o arquivo
+    // "configbits.h" com #Pragma config OSC INTRC (ou semelhante)
 
-    unsigned char data;
-    signed char status;
-
-    
-
-
-    // Definicao de portas para os LEDs
-    //TRISDbits.RD7=0; TRISDbits.RD6=0; TRISDbits.RD3=0; TRISDbits.RD2=0;
-    //TRISCbits.RC2=0;
-
-    TRISCbits.RC0=0;    // LED Amarelo
-    TRISCbits.RC1=0;    // LED Verde
-    TRISCbits.RC2=0;    // LED Vermelho
+    TRISCbits.RC0=0;    // LED Amarelo para simples sinalizacao
+    TRISCbits.RC1=0;    // LED Verde para simples sinalizacao
+    TRISCbits.RC2=0;    // LED Vermelho para simples sinalizacao
     
     TRISCbits.RC6=1;    // TX da EUSART
+                        // O programa ira informar na porta serial o status
+                        // e logs de funcionamento da coleta de dados I2C
 
-    TRISCbits.RC3=0;    // SCL do I2C
-    TRISCbits.RC4=0;    // SDA do I2C
-    LATC3=0;
-    LATC4=0;
-
-    Delay10KTCYx(10);
-
-    TRISCbits.RC3=1;    // SCL do I2C
-    TRISCbits.RC4=1;    // SDA do I2C
-
-
-    LED_AMAR=0; LED_VERM=1; LED_VERD=0;
-
-    CMCON = 0;
-
-    INTCON = 0;
-    SSPCON2= 0x00;
-    //SSPADD = 0x13;  // ou (19 dec) para 100 khz e clock de 8 mhz (AcePic28)
-
-    SMP = 1;        // desabilita o SLEW RATE CONTROL para 100 khz
-
-    SSPIF=0;        // limpa o flag de interrupcao SSPIF
-    BCLIF=0;        // limpa o flag de COLISAO do barramento
-
-    PEIE=0;
-    GIE=0;
-
-
-    //TRISBbits.RB0=1;    //SDA
-    //TRISBbits.RB1=1;    //SCL
-
-    //PORTB=0x00;
-
-    /*
-     * 17. Module: MSSP
+    /* 17. Module: MSSP (ERRATA for PIC18F4550 and PIC18F2525, etc)
+     * ================
+     *
      *  It has been observed that following a Power-on Reset, I2C mode may not
      *  initialize properly by just configuring the SCL and SDA pins as either
      *  inputs or outputs. This has only been seen in a few unique system
@@ -148,9 +95,7 @@ void main(void) {
      *  application's power supply, should indicate if a system is
      *  susceptible to this issue.
      *
-     * Work around
-     *
-     * Before configuring the module for I2C operation:
+     * Work around = Before configuring the module for I2C operation:
      * 1. Configure the SCL and SDA pins as outputs by clearing
      *  their corresponding TRIS bits.
      * 2. Force SCL and SDA low by clearing the corresponding LAT bits.
@@ -159,25 +104,164 @@ void main(void) {
      *
      * Once this is done, use the SSPCON1 and SSPCON2 registers to
      *  configure the proper I2C mode as before.
-     *
      */
 
-    //TRISBbits.RB0=0;    //SDA 0=output
-    //TRISBbits.RB1=0;    //SCL 0=output
-    //PORTBbits.RB0=0;
-    //PORTBbits.RB1=0;
-    //LATB0=0x00;     // Workaround para ERRATA
-    //LATB1=0x00;
+    TRISCbits.RC3=0;    // SCL do I2C colocado como saida por causa de bug*
+    TRISCbits.RC4=0;    // SDA do I2C colocado como saida por causa de bug*
+    LATC3=0;            // bug* pede que zere-se o LAT das portas SCL e SDA
+    LATC4=0;            // durante inicializacao do I2C para evitar flutuacoes
+                        // eletricas que ficariam nas portas antes de liga-las
 
-    
+    Delay10KTCYx(10);   // simples pausa para troca de estado na SDA e SCL
 
-    //Delay10KTCYx(100);
+    TRISCbits.RC3=1;    // SCL do I2C, agora corretamente como saida
+    TRISCbits.RC4=1;    // SDA do I2C, agora corretamente como saida
+    // here ends "errata workaround"
 
-    //TRISBbits.RB0=1;    //SDA 1=input
-    //TRISBbits.RB1=1;    //SCL 1=input
+    LED_AMAR=0; LED_VERM=1; LED_VERD=0;
 
-    //RBPU=1; // pull up interno desabilitado
-    //INTCON2bits.RBPU=1;
+    CMCON = 0x00;   // aplica configuracao '0' aos Comparators;
+                    // teoricamente isso nada influi no funcionamento do I2C
+                    // e essa configuracao poderia ser descartada
+
+    INTCON = 0x00;  // Interrupt Control Register (desnecessario neste ponto)
+                    // Esse registrador quando colocado '0', desabilita todas
+                    // as configuracoes de interrupcao nos vetores abaixo:
+                    // GIE/GIEH PEIE/GIEL TMR0IE INT0IE RBIE TMR0IF INT0IF RBIF
+    PEIE=0;         // como o INTCON ja tinha sido zerado anteriormente
+    GIE=0;          // esses dois vetores nao precisariam estar sendo zerados
+
+     /*  O protocolo I2C utiliza os seguintes REGISTRADORES:
+     *
+     *  MSSP Control Register 1 (SSPCON1)
+     *  =================================
+     *
+     *      WCOL:  Write Collision Detect bit (sem colisao = 0)
+     *      SSPOV: Receive Overflow Indicator bit (sem overflow = 0)
+     *      SSPEN: Master Synchronous Serial Port Enable bit (habilita pinos)
+     *             Os pinos fisicos devem ser setados (TRIS) previamente com 1
+     *
+     *      CKP: SCK Release Control bit (segura o clock em LOW = 0, e libera o
+     *           clock = 1 elevando a voltagem pull-up no pino)
+      *
+     *      SPM3:SSPM0: Master Synchronous Serial Port Mode Select bit
+     *                  Define o TIPO MASTER (2 tipos) ou SLAVE (4 tipos)
+     */
+
+
+    SSPCON2=0x00;   // nao precisaria teoricamente ser zerado, pois eh
+                    // controlado pelos comandos da PLIB
+
+     /*  MSSP Control Register 2 (SSPCON2) - Detalhes no Modo Master
+     *   =================================
+     *
+     *      GCEN: General Call Enable bit (Slave mode only) (not used in MASTER)
+     *      ACKSTAT: Acknowledge Status bit, Master Transmit Only
+     *              (ACK foi recebido do Slave =0; =1 nao recebeu ACK)
+     *
+     *      ACKDT: Acknowledge Data bit (Recepcao de ACK pelo MASTER)
+     *              (ACK foi confirmado, gerou ACK)
+     *
+     *      ACKEN: Acknowledge Sequence Enable bit (Controla a transmissao de
+     *             ACK pelo ACKDT, zerado automaticamente pelo hardware apos)
+     *
+     *      RCEN: Receive Enable bit (Master Receive mode only)
+     *            (1 habilita a recepcao; 0 esta em modo IDLE)
+     *
+     *      PEN: Stop Condition Enable bit (inicia condicao de STOP = 1, e eh
+     *           zerado automaticamente pelo hardware apos)
+     *
+     *      RSEN: Repeated Start Condition Enable bit (inicia repeticao de
+     *            START e eh zerado automaticamente pelo hardware apos)
+     * 
+     *      SEN: Start Condition Enable/Stretch Enable bit
+     *      obs: esses vetores (ACKEN, RCEN, PEN, RSEN e SEN) nao podem ser
+     *           escritos no momento que o I2C estiver ativo (Startado)
+     */
+
+     /*  MSSP Control Register 2 (SSPCON2) - Detalhes no Modo Slave
+     *   =================================
+     *
+     *      GCEN: General Call Enable bit (1= gera interrupcao quando o endereco
+     *            0x0000 for recebido no SSPSR)
+     *      ACKSTAT: Acknowledge Status bit (nao utilizado no modo slave)
+     *      ADMSK5:ADMSK2: Slave Address Mask Select bits (1= mascaramento do
+     *                     endereco Slave do SSPADD)
+     *      ADMSK1: Slave Address Mask Select bit (=1 habilita mascara SSPADD)
+     *      SEN: Stretch Enable bit (1= habilitado o Stretch)
+     */
+
+    SMP = 1;        // desabilita o SLEW RATE CONTROL, para 100 khz
+                    // comando nao necessario, pois sera controlado pelo
+                    // OpenI2C da PLIB. Vetor dentro do Registrador SSPSTAT.
+     /*
+     *  MSSP Status Register (SSPSTAT)
+     *  ==============================
+     *
+     *      obs: Apenas o SMP e CKE setados para 100/400/1000khz e MASTER/SLAVE
+     *      DA, P, S, RW, UA e BF sao status durante a transmissao ou recepcao
+     *
+     *  SMP: Slew Rate Control bit
+      *      0 = 100 khz ou 1 mhz
+      *      1 = 400 khz
+      *
+     *  CKE: SMBus Select bit
+      *      Habilita o SMBus Specific Inputs
+      *
+     *  SSPBUF: Serial Receive/Transmit Buffer Register
+     *          receive the byte from SSPSR and generate interrupt SSPIF
+     *          SSPBUF/SSPRR are used also so send a byte
+     *
+     *  SSPSR:  Shift Register ? Not directly accessible, used for
+     *                           shifting data in or out
+     *  SSPADD: Address Register, address when in I2C Slave mode.
+     *
+     *  When the in Master mode, the lower seven bits of SSPADD act as the
+     *  Baud Rate Generator (BRG) reload value
+     */
+
+    SSPIF=0;        // limpa o flag de interrupcao SSPIF
+                    // nao necessario neste ponto do programa
+    /*  PIR1: PERIPHERAL INTERRUPT REQUEST (FLAG) REGISTER 1
+     *  ====================================================
+     *          obs: existe outro PIR2 para mais perifericos
+     * 
+     *      SPPIF: Streaming Parallel Port Read/Write Interrupt Flag bit
+     *      ADIF: A/D Converter Interrupt Flag bit
+     *      RCIF: EUSART Receive Interrupt Flag bit
+     *      TXIF: EUSART Transmit Interrupt Flag bit
+     *      SSPIF: Master Synchronous Serial Port Interrupt Flag bit
+     *             0 = esperando para receber ou transmitir
+     *             1 = a recepcao ou transmissao esta completada
+     *      CCP1IF: CCP1 Interrupt Flag bit
+     *      TMR2IF: TMR2 to PR2 Match Interrupt Flag bit
+     *      TMR1IF: TMR1 Overflow Interrupt Flag bit
+     */
+
+    BCLIF=0;        // limpa o flag de COLISAO do barramento
+                    // nao necessario na inicializacao do programa
+    /*  PIR2: PERIPHERAL INTERRUPT REQUEST (FLAG) REGISTER 2
+     *  ====================================================
+     *
+     *      OSCFIF: Oscillator Fail Interrupt Flag bit
+     *      CMIF: Comparator Interrupt Flag bit
+     *      USBIF: USB Interrupt Flag bit
+     *      EEIF: Data EEPROM/Flash Write Operation Interrupt Flag bit
+     *      BCLIF: Bus Collision Interrupt Flag bit
+     *             1 = houve COLISAO no barramento
+     *             obs: tem que ser ZERADO em software
+     *      HLVDIF: High/Low-Voltage Detect Interrupt Flag bit
+     *      TMR3IF: TMR3 Overflow Interrupt Flag bit
+     *      CCP2IF: CCP2 Interrupt Flag bit
+     */
+
+
+    //INTCON2bits.RBPU=1;   // pull up interno do PORTB desabilitado
+                            // nao necessario para o I2C, default nao interfere
+    /*  obs:    The weak pull-up is automatically turned off when the port
+     *          pin is configured as an output. The pull-ups are disabled on
+     *          a Power-on Reset.
+     */
 
     //TRISCbits.RC6=0;    // Saida TX EUSART
     ADCON1=0x0F;              // desabilita todas as portas analogicas e
@@ -374,47 +458,6 @@ void main(void) {
 
 }
 
-void readDevice2(void){
-
-    /*
-     I2C1_Start();              // issue I2C start signal
-     I2C1_Write(0x5C);          // send byte via I2C  (device address + W)
-
-     I2C1_Write(0x03);          // send byte (address of EEPROM location)
-     I2C1_Write(0x00);          // send data (data to be written)
-     I2C1_Write(0x04);
-     I2C1_Stop();               // issue I2C stop signal
-
-     I2C1_Start();              // issue I2C start signal
-     I2C1_Write(0x5C);          // send byte via I2C  (device address + W)
-     I2C1_Write(0x03);          // send byte (address of EEPROM location)
-     I2C1_Write(0x00);          // send data (data to be written)
-     I2C1_Write(0x04);
-     I2C1_Stop();
-
-     I2C1_Start();                  // issue I2C start signal
-     I2C1_Write(0x5C);              // send byte via I2C  (device address + W)
-     dummy = I2C1_Read(1);          // Read the data (acknowledge)
-     dummy = I2C1_Read(1);          // Read the data (acknowledge)
-     FC = I2C1_Read(1);             // Read the data (acknowledge)
-     RN = I2C1_Read(1);             // Read the data (acknowledge)
-     RHL = I2C1_Read(1);            // Read the data (acknowledge)
-     RHH = I2C1_Read(1);            // Read the data (acknowledge)
-     TEMPL = I2C1_Read(1);          // Read the data (acknowledge)
-     TEMPH = I2C1_Read(1);          // Read the data (acknowledge)
-     I2C1_Stop();
-
-     RH = RHH << 8;
-     RH |= RHL;
-
-     TEMP = TEMPH << 8;
-     TEMP |= TEMPL;
-     */
-
-}
-
-
-
 void ciclo (void)
 {
     unsigned char TEMPL=0, TEMPH=0, HUMIDL=0, HUMIDH=0;
@@ -535,6 +578,15 @@ void ciclo (void)
         temperatura *= 256;
         temperatura += TEMPH;
         temperatura /= 10;
+
+         /* ou ainda
+         RH = RHH << 8;
+         RH |= RHL;
+
+         TEMP = TEMPH << 8;
+         TEMP |= TEMPL;
+         */
+
 
         //sprintf (msg, "OP=%2.2X BT=%2.2X PL=%2.2X %2.2X TL=%2.2X %2.4X Dy=%2.4X \r\n",OP,BT,PRESSAOH,PRESSAOL,TEMPL,TEMPH,DUMMY);
         //printf ("TEMPL = 0x%2.2X TEMPH= 0x%2.2X \r ",TEMPL,TEMPH);

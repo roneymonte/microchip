@@ -24,14 +24,14 @@ OS_CURRENT="$(shell uname -s)"
 MP_CC="C:\Program Files (x86)\Microchip\xc8\v1.30\bin\xc8.exe"
 # MP_CPPC is not defined
 # MP_BC is not defined
-# MP_AS is not defined
+MP_AS="C:\Program Files (x86)\Microchip\xc8\v1.30\bin\xc8.exe"
 # MP_LD is not defined
 # MP_AR is not defined
 DEP_GEN=${MP_JAVA_PATH}java -jar "C:/Program Files (x86)/Microchip/MPLABX/mplab_ide/mplab_ide/modules/../../bin/extractobjectdependencies.jar" 
 MP_CC_DIR="C:\Program Files (x86)\Microchip\xc8\v1.30\bin"
 # MP_CPPC_DIR is not defined
 # MP_BC_DIR is not defined
-# MP_AS_DIR is not defined
+MP_AS_DIR="C:\Program Files (x86)\Microchip\xc8\v1.30\bin"
 # MP_LD_DIR is not defined
 # MP_AR_DIR is not defined
 # MP_BC_DIR is not defined
