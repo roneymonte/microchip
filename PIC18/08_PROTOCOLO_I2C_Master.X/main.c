@@ -22,17 +22,20 @@
  *               e sobre os REGISTRADORES e seus VETORES de configuracao
  * Versao 0.3c - Todos comentarios e documentacoes do Datasheet (PIC18F4550)
  *               estao transcritos, o codigo foi re-organizado em funcoes
+ * Versao 0.3d - Todas rotinas re-arrumadas, I2C e timer0 (pausa) funcionando OK
+ * 
  *
  */
 
 #include <xc.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h>             // para uso do comando sprintf()
 #include "configbits2525.h"     // outro arquivo config_bits.h para PIC18F4550
-#include <plib/delays.h>
-#include <plib/usart.h>
-#include <plib/i2c.h>
+#include <plib/delays.h>        // para uso do comando Delay10KTCY(), etc
+#include <plib/usart.h>         // para uso da interface Serial
+#include <plib/i2c.h>           // para uso da interface MSSP I2C
+#include <plib/timers.h>        // para uso formal dos TIMERS
 
 #define _XTAL_FREQ 8000000
 #define FOSC       8000000UL
@@ -42,6 +45,7 @@
 #define LED_VERD    PORTCbits.RC1
 #define LED_VERM    PORTCbits.RC2
 
+#define USE_AND_MASKS
 
 /*      ** funcoes e comandos do Protocolo I2C (plib) - Compilador XC8 **
         AckI2C      :   Generate I2C? bus Acknowledgecondition.
@@ -66,9 +70,12 @@ void configuracao_I2C (void);
 void configuracao_PIC (void);
 void configuracao_EUSART (void);
 void testaColisao(void);
-void ciclo (void);
 void getDS1307(void);
 void getTemperaturaHumidade (void);
+void pausa (unsigned int segundos);
+void interrupt global_isr(void);
+
+
 
 void main(void)
 {
@@ -153,19 +160,18 @@ void main(void)
 
     OpenI2C(MASTER,SLEW_OFF);   // configuracao implicita da SSPCON1 e SSPSTAT
 
-    ciclo();
-
     while (1)
     {
         testaColisao();
         getDS1307();
 
-        testaColisao();
+        
+
+        //testaColisao();
         getTemperaturaHumidade();
 
+        pausa(10);
     }
-
-
 }
 
 
@@ -277,13 +283,15 @@ void getTemperaturaHumidade (void)
          TEMP |= TEMPL;
          */
 
-        sprintf (msg, "Temperatura= %f, Humidade= %f .", temperatura, humidade);
+        sprintf (msg, "Temp= %0.2f, Humid= %0.2f .", temperatura, humidade);
 
         while(BusyUSART());
         putsUSART(msg);
 
         while(BusyUSART());
         putrsUSART("\n\r");
+
+        LED_VERD=0;
 
 }
 
@@ -293,6 +301,8 @@ void getDS1307(void)
     char msg[40];
 
     //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
+
+    LED_AMAR=1;
 
     IdleI2C();
     StartI2C();
@@ -356,13 +366,15 @@ void getDS1307(void)
     //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
 
 
-    LED_VERM = 0;
+    LED_VERM = 0; LED_AMAR=0; LED_VERD=1;
 
-    sprintf(msg,"%xh:%xm:%xs _ dia %x/%x/%x\r\n",
+    sprintf(msg,"%xh:%xm:%xs _ dia %x/%x/%x _ ",
             hora,minuto,segundo,dia,mes,ano);
 
     while(BusyUSART());
     putsUSART( msg );
+
+    LED_VERD=0;
 }
 
 void configuracao_I2C (void)
@@ -562,13 +574,13 @@ void configuracao_PIC (void)
      */
 
 
-    INTCON = 0x00;  // Interrupt Control Register (desnecessario neste ponto)
+    //INTCON = 0x00;  // Interrupt Control Register (desnecessario neste ponto)
                     // Esse registrador quando colocado '0', desabilita todas
                     // as configuracoes de interrupcao nos vetores abaixo:
                     // GIE/GIEH PEIE/GIEL TMR0IE INT0IE RBIE TMR0IF INT0IF RBIF
 
-    INTCONbits.PEIE=0;  // como o INTCON ja tinha sido zerado anteriormente
-    INTCONbits.GIE=0;   // esses dois vetores nao precisariam estar sendo zerados
+    //INTCONbits.PEIE=0;  // como o INTCON ja tinha sido zerado anteriormente
+    //INTCONbits.GIE=0;   // esses dois vetores nao precisariam estar sendo zerados
 
     /* INTCON: INTERRUPT CONTROL REGISTER
      * ==================================
@@ -760,6 +772,7 @@ void configuracao_PIC (void)
 
 void configuracao_EUSART (void)
 {
+    //#define CloseUSART( ) RCSTA&=0b01001111,TXSTAbits.TXEN=0,PIE1&=0b11001111
     CloseUSART();   // fecha qualquer USART que estaria supostamente aberta antes
                     // just closes any previous USART open port
 
@@ -799,4 +812,75 @@ void testaColisao(void)
 	}
 	while (status!=0);		//write untill successful communication
 
+        LED_VERM=0;
+
+}
+
+void pausa (unsigned int segundos)
+{
+    if (segundos <= 0) return;
+    
+    OpenTimer0( TIMER_INT_OFF &
+                T0_16BIT &
+                T0_PS_1_32 &
+                T0_SOURCE_INT &
+                T0_EDGE_FALL
+            );
+    //Enable TIMER Interrupt (Int_On)
+
+    /* Calculo do Timer0
+     *
+     *  (1 seg * 8000000) / (4 * 32)   ... 32 = 1/32 prescaler
+     *  8.000.000 / 128 = 62500
+     *
+     *  Timer0 = 65536 - 62500 = 3035 ou 0xBDB
+     */
+
+    WriteTimer0( 0xBDC );
+
+    LED_AMAR=1; LED_VERM=0;
+
+    T0CONbits.TMR0ON = 1;     // Ligue o Timer 0
+    //T0CONbits.PSA = 0;      // Use valores atraves do Pre-Scaler
+    //T0CONbits.T0CS=0;       // A fonte clock eh Interna (CLKO/FOSC) T0_SOURCE_INT
+
+    // Sem Interrupcoes
+    INTCONbits.GIE      = 0;    // Interrupcoes Globais desligadas
+    INTCONbits.PEIE     = 0;    // Interrupcoes dos Perifericos desligadas
+    INTCONbits.TMR0IE   = 0;    // Interrupcoes do Timer0 desligadas
+
+    INTCONbits.TMR0IF   = 0;    // Zera o contador do Timer0
+   
+    while (segundos > 0)
+    {
+        while (!TMR0IF) ;       // enquando o Timer0 nao tiver overflow, espere
+
+        LED_AMAR=~LED_AMAR;     // Led Amarelo pisca a cada segundo
+        //segundos--;
+        //WriteTimer0( 0xBDC );
+        INTCONbits.TMR0IF=0;    // Zera o contador do Timer0
+        segundos--;
+    }
+    
+    CloseTimer0();              // Feche o Timer0
+    //TMR0ON=0;
+
+    LED_AMAR=0; LED_VERM=0; LED_VERD=0;
+}
+
+void interrupt global_isr(void)
+{
+    if (TMR0IE && TMR0IF)
+    {
+         LED_VERD=~LED_VERD;        // gera uma mudanca de estado LED Verde
+
+        //WriteTimer0 ( 0x3D );     // Nao eh necessario re-escrever o valor
+                                    // de Overflow para o Timer0
+        TMR0IF=0;                   // Limpa o status de Overflow do Timer0
+        //TMR0IE=1;                 // Nao eh necessario re-habilitar
+                                    // a Interrupcao
+
+    }
+
+    LED_VERD=~LED_VERD; 
 }
