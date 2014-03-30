@@ -23,6 +23,7 @@
  * Versao 0.3c - Todos comentarios e documentacoes do Datasheet (PIC18F4550)
  *               estao transcritos, o codigo foi re-organizado em funcoes
  * Versao 0.3d - Todas rotinas re-arrumadas, I2C e timer0 (pausa) funcionando OK
+ * Versao 0.4  - Iniciada rotina getPressao com modulo Adafruit BMP180
  * 
  *
  */
@@ -71,6 +72,7 @@ void configuracao_PIC (void);
 void configuracao_EUSART (void);
 void testaColisao(void);
 void getDS1307(void);
+void getPressao(void);
 void getTemperaturaHumidade (void);
 void pausa (unsigned int segundos);
 void interrupt global_isr(void);
@@ -299,6 +301,90 @@ void getDS1307(void)
 {
     int hora=0, minuto=0, segundo=0, diasemana=0, dia=0, mes=0, ano=0, dummy=0;
     char msg[40];
+
+    //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
+
+    LED_AMAR=1;
+
+    IdleI2C();
+    StartI2C();
+        //IdleI2C();
+        __delay_us(16);
+        WriteI2C( 0xD0 );
+        //IdleI2C();
+        __delay_us(60);
+        WriteI2C( 0x00 );
+        IdleI2C();
+        __delay_us(16);
+        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
+    StopI2C();
+    //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
+
+    //IdleI2C();
+    __delay_us(26);
+
+    RestartI2C();
+        __delay_us(16);
+
+        WriteI2C( 0xD1 );
+        __delay_us(1);
+        IdleI2C();
+
+        segundo    =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        minuto  =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        hora =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        diasemana=ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        dia     =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        mes     =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        ano     =ReadI2C();
+        AckI2C();
+        IdleI2C();
+
+        dummy   =ReadI2C();
+        //AckI2C();
+        //__delay_us(16);
+        //IdleI2C();
+        //NotAckI2C();
+        //IdleI2C();
+    StopI2C();
+    //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
+
+
+    LED_VERM = 0; LED_AMAR=0; LED_VERD=1;
+
+    sprintf(msg,"%xh:%xm:%xs _ dia %x/%x/%x _ ",
+            hora,minuto,segundo,dia,mes,ano);
+
+    while(BusyUSART());
+    putsUSART( msg );
+
+    LED_VERD=0;
+}
+
+void getPressao(void)
+{
+    #define BMP085_ADDRESS 0xEE      // I2C address of BMP085
+    #define P_CORRECTION   1.5       // in mBars - factor to adjust for elevation to match local weather station pressure
+                                     // this value for 14' above sea level (in Boca Raton, Florida)
+
 
     //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
 

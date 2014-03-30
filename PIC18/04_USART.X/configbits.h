@@ -30,7 +30,7 @@ extern "C" {
 // Use project enums instead of #define for ON and OFF.
 
 // CONFIG1H
-#pragma config OSC = HS         // Oscillator Selection bits (HS oscillator)
+#pragma config OSC = XT_XT         // Oscillator Selection bits (HS oscillator)
 #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
 #pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
