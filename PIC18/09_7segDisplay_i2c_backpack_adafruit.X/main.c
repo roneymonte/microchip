@@ -12,6 +12,7 @@
 #include "configbits.h"
 
 #define _XTAL_FREQ 8000000
+#define FOSC 8000000
 #define Baud 100000
 
 #define USE_AND_MASKS
@@ -53,5 +54,64 @@ const unsigned char numbertable[] =
 void main (void)
 {
 
+
+}
+
+void initExtLCD (void)
+{
+    TRISCbits.TRISC3=0;    // SCL do I2C colocado como saida por causa de bug*
+    TRISCbits.TRISC4=0;    // SDA do I2C colocado como saida por causa de bug*
+    LATC3=0;            // bug* pede que zere-se o LAT das portas SCL e SDA
+    LATC4=0;            // durante inicializacao do I2C para evitar flutuacoes
+                        // eletricas que ficariam nas portas antes de liga-las
+
+    Delay10KTCYx(10);   // simples pausa para troca de estado na SDA e SCL
+
+    TRISCbits.TRISC3=1;    // SCL do I2C, agora corretamente como saida
+    TRISCbits.TRISC4=1;    // SDA do I2C, agora corretamente como saida
+
+    SSPADD = ((FOSC/4)/Baud)-1;
+
+    CloseI2C();
+    OpenI2C(MASTER,SLEW_OFF);
+
+    StartI2C();
+        WriteI2C(HT16K33_ADDR);
+        AckI2C();
+        WriteI2C(HT16K33_CMD_SETUP);
+        AckI2C();
+        StopI2C();
+
+        RestartI2C();
+        WriteI2C(HT16K33_ADDR);
+        AckI2C();
+        WriteI2C(HT16K33_BLINK_DISPLAYON);
+        AckI2C();
+        StopI2C();
+
+        RestartI2C();
+        WriteI2C(HT16K33_ADDR);
+        AckI2C();
+        WriteI2C(HT16K33_CMD_BRIGHTNESS | 15);
+        StopI2C();
+
+        RestartI2C();
+        WriteI2C(HT16K33_ADDR);
+        AckI2C();
+        WriteI2C(0x00);
+        AckI2C();
+        WriteI2C(numbertable[1]);
+        AckI2C();
+        WriteI2C(numbertable[2]);
+        AckI2C();
+        WriteI2C(numbertable[3]);
+        AckI2C();
+        WriteI2C(numbertable[4]);
+        NotAckI2C();
+        StopI2C();
+
+
+
+        while (1);
 
 }
