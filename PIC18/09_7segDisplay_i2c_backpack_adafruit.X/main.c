@@ -7,7 +7,14 @@
  */
 
 #include <xc.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <plib/i2c.h>
+#include <plib/delays.h>
+#include <plib/usart.h>
+#include <math.h>
+#include <string.h>
 
 #include "configbits.h"
 
@@ -28,9 +35,14 @@
 #define HT16K33_CMD_BRIGHTNESS  0x0E
 #define HT16K33_ADDR            0x70
 
-#define BUFFER_SIZE             8
+//#define BUFFER_SIZE             8
 
-unsigned short displaybuffer[ BUFFER_SIZE ];
+#define LED_AMAR    PORTCbits.RC0
+#define LED_VERD    PORTCbits.RC1
+#define LED_VERM    PORTCbits.RC2
+
+int hora, minuto, segundo;
+//unsigned short displaybuffer[ BUFFER_SIZE ];
 const unsigned char numbertable[] =
 {
     0x3F, /* 0 */
@@ -51,13 +63,141 @@ const unsigned char numbertable[] =
     0x71, /* F */
 };
 
+
+void initExt7SegLCD (void);
+void getDS1307(void);
+void configuracao_EUSART (void);
+
+
+
 void main (void)
 {
+    TRISC0=0;   // Led Amar
+    TRISC1=0;   // Led Verd
+    TRISC2=0;   // LED Verm
+    TRISC6=0;   // saida TX EUSART
+    ADCON1=0x0F;
 
+    unsigned int D0, D1, D2, D3;
+
+    char msg[30];
+
+    LED_VERM=1;
+    configuracao_EUSART();
+
+    initExt7SegLCD();
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+
+    while (1){
+
+        getDS1307();
+
+
+        sprintf(msg," ___[%x:%x:%x]___", hora, minuto,segundo );
+
+        while(BusyUSART());
+        putsUSART( msg );
+
+
+        D0 = (unsigned) (hora / 10);
+        if (D0 == 0){
+            D1 = hora;
+            }
+            else
+                D1 = (unsigned) ( hora - (D0*10) );
+
+
+
+        D2 = (unsigned) (minuto / 10);
+        if (D2 == 0){
+            D3 =  minuto ;
+            }
+            else 
+                D3 = (unsigned) (minuto - (D2*10) );
+        
+
+        /*
+        D0 = hora / 10 % 10;
+        D1 = hora % 10;
+        D2 = minuto /10 % 10;
+        D3 = minuto % 10;
+         */
+
+
+        sprintf(msg,"___[%x:%x]___ %x_%x:%x_%x:...%x_ \r\n", hora, minuto,
+            D0, D1, D2, D3 ,segundo);
+
+        while(BusyUSART());
+        putsUSART( msg );
+
+        StartI2C();
+            __delay_us(16);
+            WriteI2C(HT16K33_ADDR << 1);
+
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[ D0 ] );
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[ D1  ]);
+            WriteI2C(0x00);
+
+            WriteI2C(0xFF);
+            WriteI2C(0x00);
+
+
+            WriteI2C(numbertable[ D2 ] );
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[ D3 ] );
+            WriteI2C(0x00);
+
+            NotAckI2C();
+            __delay_us(16);
+        StopI2C();
+
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+
+        RestartI2C();
+            __delay_us(16);
+            WriteI2C(HT16K33_ADDR << 1);
+
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[0]);
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[0]);
+            WriteI2C(0x00);
+
+            WriteI2C(0x00);
+            WriteI2C(0x00);
+
+
+            WriteI2C(numbertable[0] );
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[0]);
+            WriteI2C(0x00);
+
+            NotAckI2C();
+            __delay_us(16);
+        StopI2C();
+
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
+
+    }
 
 }
 
-void initExtLCD (void)
+void initExt7SegLCD (void)
 {
     TRISCbits.TRISC3=0;    // SCL do I2C colocado como saida por causa de bug*
     TRISCbits.TRISC4=0;    // SDA do I2C colocado como saida por causa de bug*
@@ -72,46 +212,162 @@ void initExtLCD (void)
 
     SSPADD = ((FOSC/4)/Baud)-1;
 
+    PIR2bits.BCLIF=0;       // limpa o flag de COLISAO do barramento
+    PIR1bits.SSPIF=0;       // limpa o flag de interrupcao SSPIF
+    PIE2bits.BCLIE = 1;     // Enable bus collision interrupts
+    PIE1bits.SSPIE = 1;     // Enable MSSP interrupt enable bit
+
     CloseI2C();
-    OpenI2C(MASTER,SLEW_OFF);
+    OpenI2C(MASTER,SLEW_ON);
+
+    LED_AMAR=1;
 
     StartI2C();
-        WriteI2C(HT16K33_ADDR);
-        AckI2C();
-        WriteI2C(HT16K33_CMD_SETUP);
-        AckI2C();
+            __delay_us(16);
+            WriteI2C(HT16K33_ADDR << 1);
+            //AckI2C();
+            //IdleI2C();
+            //__delay_us(60);
+            WriteI2C(HT16K33_CMD_SETUP
+                    );
+            AckI2C();
+            
+        StopI2C();
+
+        IdleI2C();
+
+        RestartI2C(); 
+            WriteI2C(HT16K33_ADDR << 1);
+            //AckI2C();//IdleI2C();
+            //__delay_us(60);
+             
+            WriteI2C( HT16K33_BLINK_CMD | HT16K33_BLINK_2HZ);
+            //AckI2C();
+            
+            __delay_us(16);
+        StopI2C();
+
+        IdleI2C();
+
+        RestartI2C();
+            __delay_us(16);
+             
+            WriteI2C(HT16K33_ADDR << 1);
+            //AckI2C();//IdleI2C();
+            //__delay_us(60);
+            WriteI2C(HT16K33_CMD_BRIGHTNESS | 7);
+            //AckI2C();
+            //__delay_us(16);
         StopI2C();
 
         RestartI2C();
-        WriteI2C(HT16K33_ADDR);
-        AckI2C();
-        WriteI2C(HT16K33_BLINK_DISPLAYON);
-        AckI2C();
+            __delay_us(16);
+            WriteI2C(HT16K33_ADDR << 1);
+
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[1] | 0x80);
+            WriteI2C(0x00);
+  
+            WriteI2C(numbertable[2]);
+            WriteI2C(0x00);
+
+            WriteI2C(0xFF);
+            WriteI2C(0x00);
+
+
+            WriteI2C(numbertable[3]);
+            WriteI2C(0x00);
+
+            WriteI2C(numbertable[4] | 0x80);
+            WriteI2C(0x00);
+
+            NotAckI2C();
+            __delay_us(16);
         StopI2C();
 
-        RestartI2C();
-        WriteI2C(HT16K33_ADDR);
-        AckI2C();
-        WriteI2C(HT16K33_CMD_BRIGHTNESS | 15);
-        StopI2C();
+        LED_VERD=1;
 
-        RestartI2C();
-        WriteI2C(HT16K33_ADDR);
+        
+
+}
+
+void getDS1307(void)
+{
+    char msg [40];
+
+    //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
+
+    LED_AMAR=1;
+
+    IdleI2C();
+    StartI2C();
+        //IdleI2C();
+        __delay_us(16);
+        WriteI2C( 0xD0 );
+        //IdleI2C();
+        __delay_us(60);
+        WriteI2C( 0x00 );
+        IdleI2C();
+        __delay_us(16);
+        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
+    StopI2C();
+    //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
+
+    //IdleI2C();
+    __delay_us(26);
+
+    RestartI2C();
+        __delay_us(16);
+
+        WriteI2C( 0xD1 );
+        __delay_us(1);
+        IdleI2C();
+
+        segundo    = (int) ReadI2C();
         AckI2C();
-        WriteI2C(0x00);
+        IdleI2C();
+
+        minuto  = (int) ReadI2C();
         AckI2C();
-        WriteI2C(numbertable[1]);
-        AckI2C();
-        WriteI2C(numbertable[2]);
-        AckI2C();
-        WriteI2C(numbertable[3]);
-        AckI2C();
-        WriteI2C(numbertable[4]);
+        IdleI2C();
+
+        hora = (int) ReadI2C();
         NotAckI2C();
-        StopI2C();
+
+    StopI2C();
+    //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
 
 
+    LED_VERM = 0; LED_AMAR=0; LED_VERD=1;
 
-        while (1);
+        sprintf(msg,"\r\n%xh:%xm:%xs _ \r\n",
+            hora,minuto,segundo);
 
+    while(BusyUSART());
+    putsUSART( msg );
+    
+
+    LED_VERD=0;
+}
+
+void configuracao_EUSART (void)
+{
+    //#define CloseUSART( ) RCSTA&=0b01001111,TXSTAbits.TXEN=0,PIE1&=0b11001111
+    CloseUSART();   // fecha qualquer USART que estaria supostamente aberta antes
+                    // just closes any previous USART open port
+
+    OpenUSART(  USART_TX_INT_OFF &
+                USART_RX_INT_OFF &
+                USART_ASYNCH_MODE &
+                USART_EIGHT_BIT &
+                USART_CONT_RX &
+                USART_BRGH_LOW,
+                12
+                );
+                // em 4 Mhz, com BRGH LOW (Bit Rate Generator LOW):
+                // 51 = 1200bps; 25 = 2400bps; 6 = 9600bps (Err);
+
+                // em 8 Mhz, com BRGH LOW (Bit Rate Generator LOW):
+                // 103 = 1200bps; 25 = 4800bps; 51 = 2400bps; 12 = 9600bps
 }
