@@ -1,4 +1,4 @@
-/*
+ /*
  * File:   main.c
  * Author: roney
  *
@@ -414,6 +414,7 @@ void getPressao(void)
         __delay_us(1);
         IdleI2C();
 
+        /*
         segundo    =ReadI2C();
         AckI2C();
         IdleI2C();
@@ -457,8 +458,10 @@ void getPressao(void)
     sprintf(msg,"%xh:%xm:%xs _ dia %x/%x/%x _ ",
             hora,minuto,segundo,dia,mes,ano);
 
+         */
+        
     while(BusyUSART());
-    putsUSART( msg );
+//    putsUSART( msg );
 
     LED_VERD=0;
 }
