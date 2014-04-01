@@ -1,20 +1,26 @@
 /* Display 7 Segmentos via I2C Backpack (Produto Adafruit)
  *
+ * "Adafruit 0.56" 4-Digit 7-Segment Display w/I2C Backpack - Red - ID: 878"
+ *
  * por Roney Monte
+ * MCU utilizada PIC18F2525
  *
  * Versao inicial - 30/mar/2014
+ * Versao 0.1 - Exemplificacao com relogio digital, lendo a hora do relogio
+ *              DS1307 via I2C, e exibindo no modulo 7-Segmentos I2C (ht16k33),
+ *              e debug do log na serial EUSART (TX pino C6)
  *
  */
 
 #include <xc.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <plib/i2c.h>
-#include <plib/delays.h>
+//#include <plib/delays.h>
 #include <plib/usart.h>
-#include <math.h>
-#include <string.h>
+//#include <math.h>
+//#include <string.h>
 
 #include "configbits.h"
 
@@ -35,14 +41,11 @@
 #define HT16K33_CMD_BRIGHTNESS  0x0E
 #define HT16K33_ADDR            0x70
 
-//#define BUFFER_SIZE             8
-
 #define LED_AMAR    PORTCbits.RC0
 #define LED_VERD    PORTCbits.RC1
 #define LED_VERM    PORTCbits.RC2
 
 int hora, minuto, segundo;
-//unsigned short displaybuffer[ BUFFER_SIZE ];
 const unsigned char numbertable[] =
 {
     0x3F, /* 0 */
@@ -67,8 +70,6 @@ const unsigned char numbertable[] =
 void initExt7SegLCD (void);
 void getDS1307(void);
 void configuracao_EUSART (void);
-
-
 
 void main (void)
 {
@@ -102,32 +103,15 @@ void main (void)
         putsUSART( msg );
 
 
-        D0 = (unsigned) (hora / 10);
-        if (D0 == 0){
-            D1 = hora;
-            }
-            else
-                D1 = (unsigned) ( hora - (D0*10) );
+        D0 = (hora & 0b00110000) >> 4;
 
+        D1 = hora & 0b00001111;
 
+        D2 = (minuto & 0b11110000) >> 4;
 
-        D2 = (unsigned) (minuto / 10);
-        if (D2 == 0){
-            D3 =  minuto ;
-            }
-            else 
-                D3 = (unsigned) (minuto - (D2*10) );
-        
+        D3 = minuto & 0b00001111;
 
-        /*
-        D0 = hora / 10 % 10;
-        D1 = hora % 10;
-        D2 = minuto /10 % 10;
-        D3 = minuto % 10;
-         */
-
-
-        sprintf(msg,"___[%x:%x]___ %x_%x:%x_%x:...%x_ \r\n", hora, minuto,
+        sprintf(msg,"___ %d%d:%d%d ...%xseg_ \r\n",
             D0, D1, D2, D3 ,segundo);
 
         while(BusyUSART());
@@ -139,26 +123,27 @@ void main (void)
 
             WriteI2C(0x00);
 
-            WriteI2C(numbertable[ D0 ] );
-            WriteI2C(0x00);
+            WriteI2C(numbertable[ D0 ] & 0xff );
+            WriteI2C(numbertable[ D0 ] >> 8);
 
-            WriteI2C(numbertable[ D1  ]);
-            WriteI2C(0x00);
+            WriteI2C(numbertable[ D1  ] );
+            WriteI2C(numbertable[ D1 ] >> 8);
 
             WriteI2C(0xFF);
-            WriteI2C(0x00);
+            WriteI2C(0xFF >> 8);
 
 
-            WriteI2C(numbertable[ D2 ] );
-            WriteI2C(0x00);
+            WriteI2C(numbertable[ D2 ] & 0xFF );
+            WriteI2C(numbertable[ D2 ] >> 8);
 
-            WriteI2C(numbertable[ D3 ] );
-            WriteI2C(0x00);
+            WriteI2C(numbertable[ D3 ] & 0xFF );
+            WriteI2C(numbertable[ D3 ] >> 8);
 
             NotAckI2C();
             __delay_us(16);
         StopI2C();
 
+        // simples delay de aprox 2 seg (nao importante)
         Delay10KTCYx(100);Delay10KTCYx(100);
         Delay10KTCYx(100);Delay10KTCYx(100);
         Delay10KTCYx(100);Delay10KTCYx(100);
@@ -190,6 +175,9 @@ void main (void)
             __delay_us(16);
         StopI2C();
 
+        // simples delay de aprox 2 seg (nao importante)
+        Delay10KTCYx(100);Delay10KTCYx(100);
+        Delay10KTCYx(100);Delay10KTCYx(100);
         Delay10KTCYx(100);Delay10KTCYx(100);
         Delay10KTCYx(100);Delay10KTCYx(100);
 
