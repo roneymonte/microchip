@@ -1,0 +1,721 @@
+[p LITE_MODE AUTOSTATIC LFSROK EMI_WORD ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 18F2525 ]
+[d frameptr 4065 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/abdiv.c
+[v ___abdiv __abdiv `(c  1 e 1 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/abmod.c
+[v ___abmod __abmod `(c  1 e 1 0 ]
+"31 /opt/microchip/xc8/v1.30/sources/common/abtofl.c
+[v ___abtofl __abtofl `(d  1 e 3 0 ]
+"33 /opt/microchip/xc8/v1.30/sources/common/abtoft.c
+[v ___abtoft __abtoft `(f  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/aldiv.c
+[v ___aldiv __aldiv `(l  1 e 4 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/almod.c
+[v ___almod __almod `(l  1 e 4 0 ]
+"36 /opt/microchip/xc8/v1.30/sources/common/altofl.c
+[v ___altofl __altofl `(d  1 e 3 0 ]
+"42 /opt/microchip/xc8/v1.30/sources/common/altoft.c
+[v ___altoft __altoft `(f  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/atdiv.c
+[v ___atdiv __atdiv `(m  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/atmod.c
+[v ___atmod __atmod `(m  1 e 3 0 ]
+"37 /opt/microchip/xc8/v1.30/sources/common/attofl.c
+[v ___attofl __attofl `(d  1 e 3 0 ]
+"37 /opt/microchip/xc8/v1.30/sources/common/attoft.c
+[v ___attoft __attoft `(f  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/awmod.c
+[v ___awmod __awmod `(i  1 e 2 0 ]
+"31 /opt/microchip/xc8/v1.30/sources/common/awtofl.c
+[v ___awtofl __awtofl `(d  1 e 3 0 ]
+"32 /opt/microchip/xc8/v1.30/sources/common/awtoft.c
+[v ___awtoft __awtoft `(f  1 e 3 0 ]
+"2 /opt/microchip/xc8/v1.30/sources/common/bmul.c
+[v ___bmul __bmul `(uc  1 e 1 0 ]
+"492 /opt/microchip/xc8/v1.30/sources/common/doprnt.c
+[v _sprintf sprintf `(i  1 e 2 0 ]
+"63 /opt/microchip/xc8/v1.30/sources/common/double.c
+[v ___flpack __flpack `(d  1 e 3 0 ]
+"88 /opt/microchip/xc8/v1.30/sources/common/fladd.c
+[v ___fladd __fladd `(d  1 e 3 0 ]
+"49 /opt/microchip/xc8/v1.30/sources/common/fldiv.c
+[v ___fldiv __fldiv `(d  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/flge.c
+[v ___flge __flge `(b  1 e 0 0 ]
+"50 /opt/microchip/xc8/v1.30/sources/common/flmul.c
+[v ___flmul __flmul `(d  1 e 3 0 ]
+"15 /opt/microchip/xc8/v1.30/sources/common/flneg.c
+[v ___flneg __flneg `(d  1 e 3 0 ]
+"62 /opt/microchip/xc8/v1.30/sources/common/float.c
+[v ___ftpack __ftpack `(f  1 e 3 0 ]
+"20 /opt/microchip/xc8/v1.30/sources/common/flsub.c
+[v ___flsub __flsub `(d  1 e 3 0 ]
+"43 /opt/microchip/xc8/v1.30/sources/common/fltol.c
+[v ___fltol __fltol `(l  1 e 4 0 ]
+"86 /opt/microchip/xc8/v1.30/sources/common/ftadd.c
+[v ___ftadd __ftadd `(f  1 e 3 0 ]
+"49 /opt/microchip/xc8/v1.30/sources/common/ftdiv.c
+[v ___ftdiv __ftdiv `(f  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/ftge.c
+[v ___ftge __ftge `(b  1 e 0 0 ]
+"51 /opt/microchip/xc8/v1.30/sources/common/ftmul.c
+[v ___ftmul __ftmul `(f  1 e 3 0 ]
+"15 /opt/microchip/xc8/v1.30/sources/common/ftneg.c
+[v ___ftneg __ftneg `(f  1 e 3 0 ]
+"20 /opt/microchip/xc8/v1.30/sources/common/ftsub.c
+[v ___ftsub __ftsub `(f  1 e 3 0 ]
+"44 /opt/microchip/xc8/v1.30/sources/common/fttol.c
+[v ___fttol __fttol `(l  1 e 4 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/isdigit.c
+[v _isdigit isdigit `(b  1 e 0 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/lbdiv.c
+[v ___lbdiv __lbdiv `(uc  1 e 1 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/lbmod.c
+[v ___lbmod __lbmod `(uc  1 e 1 0 ]
+"27 /opt/microchip/xc8/v1.30/sources/common/lbtofl.c
+[v ___lbtofl __lbtofl `(d  1 e 3 0 ]
+"27 /opt/microchip/xc8/v1.30/sources/common/lbtoft.c
+[v ___lbtoft __lbtoft `(f  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/llmod.c
+[v ___llmod __llmod `(ul  1 e 4 0 ]
+"30 /opt/microchip/xc8/v1.30/sources/common/lltofl.c
+[v ___lltofl __lltofl `(d  1 e 3 0 ]
+"35 /opt/microchip/xc8/v1.30/sources/common/lltoft.c
+[v ___lltoft __lltoft `(f  1 e 3 0 ]
+"2 /opt/microchip/xc8/v1.30/sources/common/lmul.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/ltdiv.c
+[v ___ltdiv __ltdiv `(um  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/ltmod.c
+[v ___ltmod __ltmod `(um  1 e 3 0 ]
+"30 /opt/microchip/xc8/v1.30/sources/common/lttofl.c
+[v ___lttofl __lttofl `(d  1 e 3 0 ]
+"30 /opt/microchip/xc8/v1.30/sources/common/lttoft.c
+[v ___lttoft __lttoft `(f  1 e 3 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/lwdiv.c
+[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/common/lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+"28 /opt/microchip/xc8/v1.30/sources/common/lwtofl.c
+[v ___lwtofl __lwtofl `(d  1 e 3 0 ]
+"28 /opt/microchip/xc8/v1.30/sources/common/lwtoft.c
+[v ___lwtoft __lwtoft `(f  1 e 3 0 ]
+"2 /opt/microchip/xc8/v1.30/sources/common/tmul.c
+[v ___tmul __tmul `(um  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/common/wmul.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asfladd.c
+[v ___asfladd __asfladd `(d  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asfldiv.c
+[v ___asfldiv __asfldiv `(d  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asflmul.c
+[v ___asflmul __asflmul `(d  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asflsub.c
+[v ___asflsub __asflsub `(d  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asftadd.c
+[v ___asftadd __asftadd `(f  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asftdiv.c
+[v ___asftdiv __asftdiv `(f  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asftmul.c
+[v ___asftmul __asftmul `(f  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/asftsub.c
+[v ___asftsub __asftsub `(f  1 e 3 0 ]
+"4 /opt/microchip/xc8/v1.30/sources/pic18/aslmul.c
+[v ___aslmul __aslmul `(ul  1 e 4 0 ]
+"8 /opt/microchip/xc8/v1.30/sources/pic18/d10ktcyx.c
+[v _Delay10KTCYx Delay10KTCYx `(v  1 e 0 0 ]
+"19 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_clos.c
+[v _CloseI2C CloseI2C `(v  1 e 0 0 ]
+"24 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_idle.c
+[v _IdleI2C IdleI2C `(v  1 e 0 0 ]
+"14 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_open.c
+[v _OpenI2C OpenI2C `(v  1 e 0 0 ]
+"11 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_read.c
+[v _ReadI2C ReadI2C `(uc  1 e 1 0 ]
+"12 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_writ.c
+[v _WriteI2C WriteI2C `(c  1 e 1 0 ]
+"73 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uopen.c
+[v _OpenUSART OpenUSART `(v  1 e 0 0 ]
+"13 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uputrs.c
+[v _putrsUSART putrsUSART `(v  1 e 0 0 ]
+"14 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uputs.c
+[v _putsUSART putsUSART `(v  1 e 0 0 ]
+"13 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uwrite.c
+[v _WriteUSART WriteUSART `(v  1 e 0 0 ]
+"70 /home/roney/MPLABXProjects/trunk/PIC18/10_PressaoBarometrica_I2C_BM180_Adafruit.X/main.c
+[v _main main `(i  1 e 2 0 ]
+"120
+[v _iniciarI2c iniciarI2c `(v  1 e 0 0 ]
+"142
+[v _lerBMP180 lerBMP180 `(l  1 e 4 0 ]
+"176
+[v _lerBMP180temperatura lerBMP180temperatura `(l  1 e 4 0 ]
+"195
+[v _lerBMP180pressao lerBMP180pressao `(l  1 e 4 0 ]
+"214
+[v _BMP180conversor BMP180conversor `(v  1 e 0 0 ]
+"289
+[v _BMP180calibragem BMP180calibragem `(v  1 e 0 0 ]
+"320
+[v _configuracao_EUSART configuracao_EUSART `(v  1 e 0 0 ]
+[s S25 . 1 `uc 1 RC0 1 0 :1:0 
+`uc 1 RC1 1 0 :1:1 
+`uc 1 RC2 1 0 :1:2 
+`uc 1 RC3 1 0 :1:3 
+`uc 1 RC4 1 0 :1:4 
+`uc 1 RC5 1 0 :1:5 
+`uc 1 RC6 1 0 :1:6 
+`uc 1 RC7 1 0 :1:7 
+]
+"400 /opt/microchip/xc8/v1.30/include/pic18f2525.h
+[s S34 . 1 `uc 1 T1OSO 1 0 :1:0 
+`uc 1 T1OSI 1 0 :1:1 
+`uc 1 CCP1 1 0 :1:2 
+`uc 1 SCK 1 0 :1:3 
+`uc 1 SDI 1 0 :1:4 
+`uc 1 SDO 1 0 :1:5 
+`uc 1 TX 1 0 :1:6 
+`uc 1 RX 1 0 :1:7 
+]
+[s S43 . 1 `uc 1 T13CKI 1 0 :1:0 
+`uc 1 CCP2 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 SCL 1 0 :1:3 
+`uc 1 SDA 1 0 :1:4 
+`uc 1 . 1 0 :1:5 
+`uc 1 CK 1 0 :1:6 
+`uc 1 DT 1 0 :1:7 
+]
+[s S52 . 1 `uc 1 T1CKI 1 0 :1:0 
+]
+[s S54 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 PA1 1 0 :1:2 
+]
+[s S57 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 PA2 1 0 :1:1 
+]
+[u S60 . 1 `S25 1 . 1 0 `S34 1 . 1 0 `S43 1 . 1 0 `S52 1 . 1 0 `S54 1 . 1 0 `S57 1 . 1 0 ]
+[v _PORTCbits PORTCbits `VES60  1 e 1 @3970 ]
+[s S229 . 1 `uc 1 TRISC0 1 0 :1:0 
+`uc 1 TRISC1 1 0 :1:1 
+`uc 1 TRISC2 1 0 :1:2 
+`uc 1 TRISC3 1 0 :1:3 
+`uc 1 TRISC4 1 0 :1:4 
+`uc 1 TRISC5 1 0 :1:5 
+`uc 1 TRISC6 1 0 :1:6 
+`uc 1 TRISC7 1 0 :1:7 
+]
+"1668
+[u S247 . 1 `S229 1 . 1 0 `S25 1 . 1 0 ]
+[v _TRISCbits TRISCbits `VES247  1 e 1 @3988 ]
+"1921
+[v _PIE1 PIE1 `VEuc  1 e 1 @3997 ]
+[s S572 . 1 `uc 1 TMR1IF 1 0 :1:0 
+`uc 1 TMR2IF 1 0 :1:1 
+`uc 1 CCP1IF 1 0 :1:2 
+`uc 1 SSPIF 1 0 :1:3 
+`uc 1 TXIF 1 0 :1:4 
+`uc 1 RCIF 1 0 :1:5 
+`uc 1 ADIF 1 0 :1:6 
+]
+"1945
+[s S580 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 RC1IF 1 0 :1:5 
+]
+[s S583 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 TX1IF 1 0 :1:4 
+]
+[u S586 . 1 `S572 1 . 1 0 `S580 1 . 1 0 `S583 1 . 1 0 ]
+[v _PIE1bits PIE1bits `VES586  1 e 1 @3997 ]
+"2018
+[v _PIR1bits PIR1bits `VES586  1 e 1 @3998 ]
+"2424
+[v _RCSTA RCSTA `VEuc  1 e 1 @4011 ]
+[s S518 . 1 `uc 1 RX9D 1 0 :1:0 
+`uc 1 OERR 1 0 :1:1 
+`uc 1 FERR 1 0 :1:2 
+`uc 1 ADDEN 1 0 :1:3 
+`uc 1 CREN 1 0 :1:4 
+`uc 1 SREN 1 0 :1:5 
+`uc 1 RX9 1 0 :1:6 
+`uc 1 SPEN 1 0 :1:7 
+]
+"2465
+[s S527 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 ADEN 1 0 :1:3 
+]
+[s S530 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 SRENA 1 0 :1:5 
+]
+[s S533 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 RC8_9 1 0 :1:6 
+]
+[s S536 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 RC9 1 0 :1:6 
+]
+[s S539 . 1 `uc 1 RCD8 1 0 :1:0 
+]
+[u S541 . 1 `S518 1 . 1 0 `S527 1 . 1 0 `S530 1 . 1 0 `S533 1 . 1 0 `S536 1 . 1 0 `S539 1 . 1 0 ]
+[v _RCSTAbits RCSTAbits `VES541  1 e 1 @4011 ]
+"2633
+[v _TXSTA TXSTA `VEuc  1 e 1 @4012 ]
+[s S111 . 1 `uc 1 TX9D 1 0 :1:0 
+`uc 1 TRMT 1 0 :1:1 
+`uc 1 BRGH 1 0 :1:2 
+`uc 1 SENDB 1 0 :1:3 
+`uc 1 SYNC 1 0 :1:4 
+`uc 1 TXEN 1 0 :1:5 
+`uc 1 TX9 1 0 :1:6 
+`uc 1 CSRC 1 0 :1:7 
+]
+"2693
+[s S120 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 BRGH1 1 0 :1:2 
+]
+[s S123 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 CSRC1 1 0 :1:7 
+]
+[s S126 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 SENDB1 1 0 :1:3 
+]
+[s S129 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 SYNC1 1 0 :1:4 
+]
+[s S132 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 TRMT1 1 0 :1:1 
+]
+[s S135 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 TX91 1 0 :1:6 
+]
+[s S138 . 1 `uc 1 TX9D1 1 0 :1:0 
+]
+[s S140 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 TXEN1 1 0 :1:5 
+]
+[s S143 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 TX8_9 1 0 :1:6 
+]
+[s S146 . 1 `uc 1 TXD8 1 0 :1:0 
+]
+[u S148 . 1 `S111 1 . 1 0 `S120 1 . 1 0 `S123 1 . 1 0 `S126 1 . 1 0 `S129 1 . 1 0 `S132 1 . 1 0 `S135 1 . 1 0 `S138 1 . 1 0 `S140 1 . 1 0 `S143 1 . 1 0 `S146 1 . 1 0 ]
+[v _TXSTAbits TXSTAbits `VES148  1 e 1 @4012 ]
+"2930
+[v _TXREG TXREG `VEuc  1 e 1 @4013 ]
+"2952
+[v _SPBRG SPBRG `VEuc  1 e 1 @4015 ]
+"2963
+[v _SPBRGH SPBRGH `VEuc  1 e 1 @4016 ]
+"3874
+[v _ADCON1 ADCON1 `VEuc  1 e 1 @4033 ]
+"4104
+[v _SSPCON2 SSPCON2 `VEuc  1 e 1 @4037 ]
+[s S282 . 1 `uc 1 SEN 1 0 :1:0 
+`uc 1 RSEN 1 0 :1:1 
+`uc 1 PEN 1 0 :1:2 
+`uc 1 RCEN 1 0 :1:3 
+`uc 1 ACKEN 1 0 :1:4 
+`uc 1 ACKDT 1 0 :1:5 
+`uc 1 ACKSTAT 1 0 :1:6 
+`uc 1 GCEN 1 0 :1:7 
+]
+"4121
+[u S291 . 1 `S282 1 . 1 0 ]
+[v _SSPCON2bits SSPCON2bits `VES291  1 e 1 @4037 ]
+"4165
+[v _SSPCON1 SSPCON1 `VEuc  1 e 1 @4038 ]
+[s S1088 . 1 `uc 1 SSPM 1 0 :4:0 
+`uc 1 CKP 1 0 :1:4 
+`uc 1 SSPEN 1 0 :1:5 
+`uc 1 SSPOV 1 0 :1:6 
+`uc 1 WCOL 1 0 :1:7 
+]
+"4185
+[s S1094 . 1 `uc 1 SSPM0 1 0 :1:0 
+`uc 1 SSPM1 1 0 :1:1 
+`uc 1 SSPM2 1 0 :1:2 
+`uc 1 SSPM3 1 0 :1:3 
+]
+[u S1099 . 1 `S1088 1 . 1 0 `S1094 1 . 1 0 ]
+[v _SSPCON1bits SSPCON1bits `VES1099  1 e 1 @4038 ]
+"4234
+[v _SSPSTAT SSPSTAT `VEuc  1 e 1 @4039 ]
+[s S917 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 R_NOT_W 1 0 :1:2 
+]
+"4329
+[s S920 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 D_NOT_A 1 0 :1:5 
+]
+[s S923 . 1 `uc 1 BF 1 0 :1:0 
+`uc 1 UA 1 0 :1:1 
+`uc 1 R_nW 1 0 :1:2 
+`uc 1 S 1 0 :1:3 
+`uc 1 P 1 0 :1:4 
+`uc 1 D_nA 1 0 :1:5 
+`uc 1 CKE 1 0 :1:6 
+`uc 1 SMP 1 0 :1:7 
+]
+[s S938 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 R 1 0 :1:2 
+`uc 1 . 1 0 :2:3 
+`uc 1 D 1 0 :1:5 
+]
+[s S943 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 W 1 0 :1:2 
+`uc 1 . 1 0 :2:3 
+`uc 1 A 1 0 :1:5 
+]
+[s S948 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 nW 1 0 :1:2 
+`uc 1 . 1 0 :2:3 
+`uc 1 nA 1 0 :1:5 
+]
+[s S953 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 R_W 1 0 :1:2 
+`uc 1 . 1 0 :2:3 
+`uc 1 D_A 1 0 :1:5 
+]
+[s S958 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 NOT_WRITE 1 0 :1:2 
+]
+[s S961 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 NOT_ADDRESS 1 0 :1:5 
+]
+[s S964 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 nWRITE 1 0 :1:2 
+`uc 1 . 1 0 :2:3 
+`uc 1 nADDRESS 1 0 :1:5 
+]
+[s S969 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 DA 1 0 :1:5 
+]
+[s S972 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 RW 1 0 :1:2 
+]
+[s S975 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 START 1 0 :1:3 
+]
+[s S978 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 STOP 1 0 :1:4 
+]
+[s S981 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 NOT_W 1 0 :1:2 
+]
+[s S984 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 NOT_A 1 0 :1:5 
+]
+[u S987 . 1 `S917 1 . 1 0 `S920 1 . 1 0 `S923 1 . 1 0 `S917 1 . 1 0 `S920 1 . 1 0 `S938 1 . 1 0 `S943 1 . 1 0 `S948 1 . 1 0 `S953 1 . 1 0 `S958 1 . 1 0 `S961 1 . 1 0 `S964 1 . 1 0 `S969 1 . 1 0 `S972 1 . 1 0 `S975 1 . 1 0 `S978 1 . 1 0 `S981 1 . 1 0 `S984 1 . 1 0 ]
+[v _SSPSTATbits SSPSTATbits `VES987  1 e 1 @4039 ]
+"4473
+[v _SSPADD SSPADD `VEuc  1 e 1 @4040 ]
+"4479
+[v _SSPBUF SSPBUF `VEuc  1 e 1 @4041 ]
+"6578
+[v _LATC3 LATC3 `VEb  1 e 0 @31835 ]
+"6580
+[v _LATC4 LATC4 `VEb  1 e 0 @31836 ]
+"7110
+[v _TRISC0 TRISC0 `VEb  1 e 0 @31904 ]
+"7112
+[v _TRISC1 TRISC1 `VEb  1 e 0 @31905 ]
+"7114
+[v _TRISC2 TRISC2 `VEb  1 e 0 @31906 ]
+"7122
+[v _TRISC6 TRISC6 `VEb  1 e 0 @31910 ]
+"354 /opt/microchip/xc8/v1.30/sources/common/doprnt.c
+[v _dpowers dpowers `C[5]ui  1 s 10 dpowers ]
+"362
+[v _hexpowers hexpowers `C[4]ui  1 s 8 hexpowers ]
+[s S849 . 1 `uc 1 RX_NINE 1 0 :1:0 
+`uc 1 TX_NINE 1 0 :1:1 
+`uc 1 FRAME_ERROR 1 0 :1:2 
+`uc 1 OVERRUN_ERROR 1 0 :1:3 
+`uc 1 fill 1 0 :4:4 
+]
+"5 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/udefs.c
+[u S855 USART 1 `uc 1 val 1 0 `S849 1 . 1 0 ]
+[v _USART_Status USART_Status `S855  1 e 1 0 ]
+"46 /home/roney/MPLABXProjects/trunk/PIC18/10_PressaoBarometrica_I2C_BM180_Adafruit.X/main.c
+[v _ac1 ac1 `s  1 e 2 0 ]
+"47
+[v _ac2 ac2 `s  1 e 2 0 ]
+"48
+[v _ac3 ac3 `s  1 e 2 0 ]
+"49
+[v _b1 b1 `s  1 e 2 0 ]
+"50
+[v _b2 b2 `s  1 e 2 0 ]
+"51
+[v _mb mb `s  1 e 2 0 ]
+"52
+[v _mc mc `s  1 e 2 0 ]
+"53
+[v _md md `s  1 e 2 0 ]
+"54
+[v _ac4 ac4 `us  1 e 2 0 ]
+"55
+[v _ac5 ac5 `us  1 e 2 0 ]
+"56
+[v _ac6 ac6 `us  1 e 2 0 ]
+"70
+[v _main main `(i  1 e 2 0 ]
+{
+"73
+[v main@msg msg `[40]uc  1 a 40 0 ]
+"72
+[v main@pressao pressao `l  1 a 4 44 ]
+[v main@temperatura temperatura `l  1 a 4 40 ]
+"70
+[v main@argc argc `i  1 p 2 111 ]
+[v main@argv argv `*.2*.2uc  1 p 3 113 ]
+"118
+} 0
+"13 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uputrs.c
+[v _putrsUSART putrsUSART `(v  1 e 0 0 ]
+{
+[v putrsUSART@data data `*.25Cuc  1 p 2 1 ]
+"20
+} 0
+"120 /home/roney/MPLABXProjects/trunk/PIC18/10_PressaoBarometrica_I2C_BM180_Adafruit.X/main.c
+[v _iniciarI2c iniciarI2c `(v  1 e 0 0 ]
+{
+"140
+} 0
+"14 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_open.c
+[v _OpenI2C OpenI2C `(v  1 e 0 0 ]
+{
+[v OpenI2C@sync_mode sync_mode `uc  1 a 1 wreg ]
+[v OpenI2C@sync_mode sync_mode `uc  1 a 1 wreg ]
+[v OpenI2C@slew slew `uc  1 p 1 0 ]
+"16
+[v OpenI2C@sync_mode sync_mode `uc  1 a 1 1 ]
+"26
+} 0
+"8 /opt/microchip/xc8/v1.30/sources/pic18/d10ktcyx.c
+[v _Delay10KTCYx Delay10KTCYx `(v  1 e 0 0 ]
+{
+[v Delay10KTCYx@unit unit `uc  1 a 1 wreg ]
+[v Delay10KTCYx@unit unit `uc  1 a 1 wreg ]
+[v Delay10KTCYx@unit unit `uc  1 a 1 1 ]
+"13
+} 0
+"19 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_clos.c
+[v _CloseI2C CloseI2C `(v  1 e 0 0 ]
+{
+"22
+} 0
+"320 /home/roney/MPLABXProjects/trunk/PIC18/10_PressaoBarometrica_I2C_BM180_Adafruit.X/main.c
+[v _configuracao_EUSART configuracao_EUSART `(v  1 e 0 0 ]
+{
+"341
+} 0
+"73 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uopen.c
+[v _OpenUSART OpenUSART `(v  1 e 0 0 ]
+{
+[v OpenUSART@config config `uc  1 a 1 wreg ]
+[v OpenUSART@config config `uc  1 a 1 wreg ]
+[v OpenUSART@spbrg spbrg `ui  1 p 2 0 ]
+"75
+[v OpenUSART@config config `uc  1 a 1 5 ]
+"143
+} 0
+"214 /home/roney/MPLABXProjects/trunk/PIC18/10_PressaoBarometrica_I2C_BM180_Adafruit.X/main.c
+[v _BMP180conversor BMP180conversor `(v  1 e 0 0 ]
+{
+"216
+[v BMP180conversor@msg msg `[40]uc  1 a 40 17 ]
+"223
+[v BMP180conversor@x1 x1 `l  1 a 4 101 ]
+[v BMP180conversor@x2 x2 `l  1 a 4 97 ]
+[v BMP180conversor@b6 b6 `l  1 a 4 93 ]
+[v BMP180conversor@p p `l  1 a 4 89 ]
+[v BMP180conversor@x3 x3 `l  1 a 4 85 ]
+"224
+[v BMP180conversor@b7 b7 `ul  1 a 4 81 ]
+[v BMP180conversor@b4 b4 `ul  1 a 4 77 ]
+"223
+[v BMP180conversor@b3 b3 `l  1 a 4 69 ]
+[v BMP180conversor@b5 b5 `l  1 a 4 65 ]
+"222
+[v BMP180conversor@up up `l  1 a 4 61 ]
+"221
+[v BMP180conversor@ut ut `l  1 a 4 57 ]
+"214
+[v BMP180conversor@temp temp `*.39l  1 p 2 107 ]
+[v BMP180conversor@pressao pressao `*.39l  1 p 2 109 ]
+"287
+} 0
+"176
+[v _lerBMP180temperatura lerBMP180temperatura `(l  1 e 4 0 ]
+{
+"193
+} 0
+"195
+[v _lerBMP180pressao lerBMP180pressao `(l  1 e 4 0 ]
+{
+"212
+} 0
+"2 /opt/microchip/xc8/v1.30/sources/common/lmul.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+{
+"4
+[v ___lmul@product product `ul  1 a 4 8 ]
+"2
+[v ___lmul@multiplier multiplier `ul  1 p 4 0 ]
+[v ___lmul@multiplicand multiplicand `ul  1 p 4 4 ]
+"13
+} 0
+"8 /opt/microchip/xc8/v1.30/sources/common/lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+{
+"11
+[v ___lldiv@quotient quotient `ul  1 a 4 9 ]
+"12
+[v ___lldiv@counter counter `uc  1 a 1 13 ]
+"8
+[v ___lldiv@dividend dividend `ul  1 p 4 0 ]
+[v ___lldiv@divisor divisor `ul  1 p 4 4 ]
+"31
+} 0
+"8 /opt/microchip/xc8/v1.30/sources/common/aldiv.c
+[v ___aldiv __aldiv `(l  1 e 4 0 ]
+{
+"11
+[v ___aldiv@quotient quotient `l  1 a 4 11 ]
+"12
+[v ___aldiv@sign sign `uc  1 a 1 10 ]
+[v ___aldiv@counter counter `uc  1 a 1 9 ]
+"8
+[v ___aldiv@dividend dividend `l  1 p 4 0 ]
+[v ___aldiv@divisor divisor `l  1 p 4 4 ]
+"42
+} 0
+"289 /home/roney/MPLABXProjects/trunk/PIC18/10_PressaoBarometrica_I2C_BM180_Adafruit.X/main.c
+[v _BMP180calibragem BMP180calibragem `(v  1 e 0 0 ]
+{
+"291
+[v BMP180calibragem@msg msg `[40]uc  1 a 40 0 ]
+"318
+} 0
+"142
+[v _lerBMP180 lerBMP180 `(l  1 e 4 0 ]
+{
+[v lerBMP180@endereco endereco `uc  1 a 1 wreg ]
+"145
+[v lerBMP180@msg msg `[40]uc  1 a 40 55 ]
+"144
+[v lerBMP180@dado dado `us  1 a 2 100 ]
+[v lerBMP180@lsb lsb `us  1 a 2 98 ]
+[v lerBMP180@msb msb `us  1 a 2 96 ]
+"142
+[v lerBMP180@endereco endereco `uc  1 a 1 wreg ]
+"147
+[v lerBMP180@endereco endereco `uc  1 a 1 95 ]
+"174
+} 0
+"492 /opt/microchip/xc8/v1.30/sources/common/doprnt.c
+[v _sprintf sprintf `(i  1 e 2 0 ]
+{
+"1509
+[v sprintf@idx idx `uc  1 a 1 37 ]
+[s S449 . 5 `*.39Cuc 1 _cp 3 0 `ui 1 _len 2 3 ]
+"533
+[u S452 . 5 `ui 1 _val 2 0 `S449 1 _str 5 0 ]
+[v sprintf@_val _val `S452  1 a 5 41 ]
+"501
+[v sprintf@width width `i  1 a 2 46 ]
+"494
+[v sprintf@ap ap `[1]*.39v  1 a 2 38 ]
+"499
+[v sprintf@c c `c  1 a 1 49 ]
+"506
+[v sprintf@prec prec `c  1 a 1 48 ]
+"508
+[v sprintf@flag flag `uc  1 a 1 40 ]
+"492
+[v sprintf@sp sp `*.39uc  1 p 2 15 ]
+[v sprintf@f f `*.25Cuc  1 p 2 17 ]
+"1550
+} 0
+"8 /opt/microchip/xc8/v1.30/sources/common/isdigit.c
+[v _isdigit isdigit `(b  1 e 0 0 ]
+{
+[v isdigit@c c `uc  1 a 1 wreg ]
+[v isdigit@c c `uc  1 a 1 wreg ]
+"14
+[v isdigit@c c `uc  1 a 1 2 ]
+"15
+} 0
+"4 /opt/microchip/xc8/v1.30/sources/common/wmul.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+{
+"6
+[v ___wmul@product product `ui  1 a 2 4 ]
+"4
+[v ___wmul@multiplier multiplier `ui  1 p 2 0 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 2 ]
+"31
+} 0
+"8 /opt/microchip/xc8/v1.30/sources/common/lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+{
+"11
+[v ___lwmod@counter counter `uc  1 a 1 13 ]
+"8
+[v ___lwmod@dividend dividend `ui  1 p 2 8 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 10 ]
+"26
+} 0
+"8 /opt/microchip/xc8/v1.30/sources/common/lwdiv.c
+[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+{
+"11
+[v ___lwdiv@quotient quotient `ui  1 a 2 5 ]
+"12
+[v ___lwdiv@counter counter `uc  1 a 1 7 ]
+"8
+[v ___lwdiv@dividend dividend `ui  1 p 2 0 ]
+[v ___lwdiv@divisor divisor `ui  1 p 2 2 ]
+"31
+} 0
+"14 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uputs.c
+[v _putsUSART putsUSART `(v  1 e 0 0 ]
+{
+[v putsUSART@data data `*.39uc  1 p 2 1 ]
+"21
+} 0
+"13 /opt/microchip/xc8/v1.30/sources/pic18/plib/USART/uwrite.c
+[v _WriteUSART WriteUSART `(v  1 e 0 0 ]
+{
+[v WriteUSART@data data `uc  1 a 1 wreg ]
+[v WriteUSART@data data `uc  1 a 1 wreg ]
+"15
+[v WriteUSART@data data `uc  1 a 1 0 ]
+"23
+} 0
+"12 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_writ.c
+[v _WriteI2C WriteI2C `(c  1 e 1 0 ]
+{
+[v WriteI2C@data_out data_out `uc  1 a 1 wreg ]
+[v WriteI2C@data_out data_out `uc  1 a 1 wreg ]
+"14
+[v WriteI2C@data_out data_out `uc  1 a 1 2 ]
+"43
+} 0
+"24 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_idle.c
+[v _IdleI2C IdleI2C `(v  1 e 0 0 ]
+{
+"28
+} 0
+"11 /opt/microchip/xc8/v1.30/sources/pic18/plib/i2c/i2c_read.c
+[v _ReadI2C ReadI2C `(uc  1 e 1 0 ]
+{
+"17
+} 0
