@@ -11,25 +11,23 @@
  *              e debug do log na serial EUSART (TX pino C6)
  *            - atualizacao dentro do Linux Ubuntu 12.04 com SVN v 1.7.9
  *              e MPLAB X IDE v2.05, Java: 1.7.0_25; Java HotSpot(TM) 64-Bit,
- *              Server VM 23.25-b01, System: Linux version 3.11.0-19-
+ *              Server VM 23.25-b01, System: Linux version 3.11.0-19
+ * Versao 0.2 - 01/abr/2014 - sistema mais estabilizado, pisca ":" e contador
+ *              de pausa via TIMER0
  *
  */
 
 #include <xc.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <stdint.h>
 #include <plib/i2c.h>
-//#include <plib/delays.h>
 #include <plib/usart.h>
-//#include <math.h>
-//#include <string.h>
-
+#include <plib/timers.h>
 #include "configbits.h"
 
 #define _XTAL_FREQ 8000000
 #define FOSC 8000000
-#define Baud 100000
+#define Baud 100000     // velocidade do barramento SCL (clock I2C)
 
 #define USE_AND_MASKS
 
@@ -73,6 +71,8 @@ const unsigned char numbertable[] =
 void initExt7SegLCD (void);
 void getDS1307(void);
 void configuracao_EUSART (void);
+void piscaSeg (char a);
+void pausa (unsigned int segundos);
 
 void main (void)
 {
@@ -80,78 +80,84 @@ void main (void)
     TRISC1=0;   // Led Verd
     TRISC2=0;   // LED Verm
     TRISC6=0;   // saida TX EUSART
-    ADCON1=0x0F;
+    ADCON1=0x0F;    // coloca pinos I/O em modo digital (nao analogico)
 
-    unsigned int D0, D1, D2, D3;
-
+    unsigned int D0, D1, D2, D3, minAnterior, contador;
     char msg[30];
 
     LED_VERM=1;
-    configuracao_EUSART();
+    configuracao_EUSART();  // inicia porta serial com 9600 bps @ 8mhz
 
-    initExt7SegLCD();
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
+    initExt7SegLCD();   // inicia barramento I2C e escreve ".12:34."
+    pausa(1); piscaSeg(0);
+
+    // Inicio do Relogio e Display
+
+    contador=60;    // o contador esta acima do limite (59)
+    minAnterior=10; // o minuto nunca chegaria a 10 (forca display)
 
     while (1){
 
+        if (contador>59)    // ira requisitar hora I2C somente 1 vez ao minuto
+        {
         getDS1307();
 
+            sprintf(msg," ___[%x:%x:%x]___", hora, minuto,segundo );
+            while(BusyUSART());
+            putsUSART( msg );
 
-        sprintf(msg," ___[%x:%x:%x]___", hora, minuto,segundo );
+        D0 = (hora & 0b00110000) >> 4;  // utiliza somente 2 bits da nibble esq
+        D1 = hora & 0b00001111;         // utiliza somente 4 bits da nibble dir
+        D2 = (minuto & 0b11110000) >> 4;// utiliza somente 4 bits da nibble esq
+        D3 = minuto & 0b00001111;       // utiliza somente 4 bits da nibble dir
 
-        while(BusyUSART());
-        putsUSART( msg );
+        contador = segundo; //atualiza a contagem interna do loop com o seg real
+        }
 
+            sprintf(msg,"___ %d%d:%d%d ...%xseg_ \r\n",
+                D0, D1, D2, D3 ,segundo);
+            while(BusyUSART());
+            putsUSART( msg );
 
-        D0 = (hora & 0b00110000) >> 4;
+        if (D3 != minAnterior)  // se mudou o minuto, entao mostre novo horario
+        {
+            StartI2C();
+                __delay_us(16); // delay experimental
+                WriteI2C(HT16K33_ADDR << 1);
 
-        D1 = hora & 0b00001111;
+                WriteI2C(0x00);
 
-        D2 = (minuto & 0b11110000) >> 4;
+                WriteI2C(numbertable[D0] & 0xff ); // preenche todos os bits
+                WriteI2C(numbertable[D0] >> 8);    // qualquer byte
+                // obs: acima como foram usados somente 2 bits, alguma "sujeira"
+                // poderia ter ficado escrita no registrador, por isso a necessidade
+                // de "preencher" os outros bits com & 0xff
 
-        D3 = minuto & 0b00001111;
+                WriteI2C(numbertable[ D1 ] & 0xFF ); // preenche todos os bits
+                WriteI2C(numbertable[ D1 ] >> 8);    // qualquer byte
 
-        sprintf(msg,"___ %d%d:%d%d ...%xseg_ \r\n",
-            D0, D1, D2, D3 ,segundo);
+                WriteI2C(0xFF); // escreve ":" sempre no segundo 0 de mostrar
+                WriteI2C(0xFF >> 8);    // qualquer byte
 
-        while(BusyUSART());
-        putsUSART( msg );
+                WriteI2C(numbertable[ D2 ] & 0xFF );// preenche todos os bits
+                WriteI2C(numbertable[ D2 ] >> 8);    // qualquer byte
 
-        StartI2C();
-            __delay_us(16);
-            WriteI2C(HT16K33_ADDR << 1);
+                WriteI2C(numbertable[ D3 ] & 0xFF );// preenche todos os bits
+                WriteI2C(numbertable[ D3 ] >> 8);    // qualquer byte
 
-            WriteI2C(0x00);
+                NotAckI2C();    // encerra envio
+                __delay_us(16); // delay experimental
+            StopI2C();
+            minAnterior=D3; // variavel para proxima checagem e mudanca
+        }
 
-            WriteI2C(numbertable[ D0 ] & 0xff );
-            WriteI2C(numbertable[ D0 ] >> 8);
+        pausa(1);   // utiliza TIMER0 para realizar contagem precisa de 1 seg
+        contador++; // incrementa controle de contagem de segundos
+        
+        if ( (contador % 2) == 0) piscaSeg(1);  // gera a piscada ":" par
+        else piscaSeg(0); // ou impar " ", a cada mudanca de contador (seg)
 
-            WriteI2C(numbertable[ D1  ] );
-            WriteI2C(numbertable[ D1 ] >> 8);
-
-            WriteI2C(0xFF);
-            WriteI2C(0xFF >> 8);
-
-
-            WriteI2C(numbertable[ D2 ] & 0xFF );
-            WriteI2C(numbertable[ D2 ] >> 8);
-
-            WriteI2C(numbertable[ D3 ] & 0xFF );
-            WriteI2C(numbertable[ D3 ] >> 8);
-
-            NotAckI2C();
-            __delay_us(16);
-        StopI2C();
-
-        // simples delay de aprox 2 seg (nao importante)
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-
+        /*
         RestartI2C();
             __delay_us(16);
             WriteI2C(HT16K33_ADDR << 1);
@@ -177,15 +183,22 @@ void main (void)
             NotAckI2C();
             __delay_us(16);
         StopI2C();
-
-        // simples delay de aprox 2 seg (nao importante)
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
-        Delay10KTCYx(100);Delay10KTCYx(100);
+        */
 
     }
+}
 
+void piscaSeg (char a)
+{
+        StartI2C();
+            WriteI2C(HT16K33_ADDR << 1);
+            WriteI2C(0x04); // posicao "dois pontos central" :
+                if ( a == 1)
+                    WriteI2C(0xFF); // dois pontos ":" aceso
+                else
+                    WriteI2C(0x00); // dois pontos ":" apagado
+            NotAckI2C();
+        StopI2C();
 }
 
 void initExt7SegLCD (void)
@@ -201,107 +214,91 @@ void initExt7SegLCD (void)
     TRISCbits.TRISC3=1;    // SCL do I2C, agora corretamente como saida
     TRISCbits.TRISC4=1;    // SDA do I2C, agora corretamente como saida
 
-    SSPADD = ((FOSC/4)/Baud)-1;
+    SSPADD = ((FOSC/4)/Baud)-1; // na definicao inicial de FOSC e BAUD
 
-    PIR2bits.BCLIF=0;       // limpa o flag de COLISAO do barramento
-    PIR1bits.SSPIF=0;       // limpa o flag de interrupcao SSPIF
-    PIE2bits.BCLIE = 1;     // Enable bus collision interrupts
-    PIE1bits.SSPIE = 1;     // Enable MSSP interrupt enable bit
+    // parametros de interrupcao abaixo nao sao necessarios de especificar
+    //PIR2bits.BCLIF=0;       // limpa o flag de COLISAO do barramento
+    //PIR1bits.SSPIF=0;       // limpa o flag de interrupcao SSPIF
+    //PIE2bits.BCLIE = 1;     // Enable bus collision interrupts
+    //PIE1bits.SSPIE = 1;     // Enable MSSP interrupt enable bit
 
-    CloseI2C();
-    OpenI2C(MASTER,SLEW_ON);
+    CloseI2C(); //fecha qualquer previa sessao I2C pre-iniciada (nao necessario)
+    OpenI2C(MASTER,SLEW_OFF);   // inicia I2C em modo Master e clock p/ 100 khz
 
     LED_AMAR=1;
 
     StartI2C();
-            __delay_us(16);
+            __delay_us(16); // delays de maneira experimental para testes
             WriteI2C(HT16K33_ADDR << 1);
-            //AckI2C();
-            //IdleI2C();
-            //__delay_us(60);
-            WriteI2C(HT16K33_CMD_SETUP
-                    );
-            AckI2C();
-            
+            WriteI2C(HT16K33_CMD_SETUP);    // liga o display
+            AckI2C();      
         StopI2C();
 
         IdleI2C();
 
-        RestartI2C(); 
+        RestartI2C();   // na pratica nao esta funcionando para o Adafruit
             WriteI2C(HT16K33_ADDR << 1);
-            //AckI2C();//IdleI2C();
-            //__delay_us(60);
-             
-            WriteI2C( HT16K33_BLINK_CMD | HT16K33_BLINK_2HZ);
-            //AckI2C();
-            
-            __delay_us(16);
+            WriteI2C(HT16K33_BLINK_CMD | HT16K33_BLINK_2HZ);
+            __delay_us(16); // delays de maneira experimental para testes
         StopI2C();
 
         IdleI2C();
 
-        RestartI2C();
-            __delay_us(16);
-             
+        RestartI2C();   // na pratica nao esta funcionando para o Adafruit
+            __delay_us(16); // delays de maneira experimental para testes
             WriteI2C(HT16K33_ADDR << 1);
-            //AckI2C();//IdleI2C();
-            //__delay_us(60);
             WriteI2C(HT16K33_CMD_BRIGHTNESS | 7);
-            //AckI2C();
-            //__delay_us(16);
         StopI2C();
 
-        RestartI2C();
-            __delay_us(16);
+        RestartI2C();       // apenas valida o display colocando ".12:34."
+            __delay_us(16); // delays de maneira experimental para testes
             WriteI2C(HT16K33_ADDR << 1);
 
             WriteI2C(0x00);
 
-            WriteI2C(numbertable[1] | 0x80);
-            WriteI2C(0x00);
+            WriteI2C(numbertable[1] | 0x80);    // numero 1 + ponto (0x80)
+            WriteI2C(0x00);                     // qualquer caractere
   
-            WriteI2C(numbertable[2]);
-            WriteI2C(0x00);
+            WriteI2C(numbertable[2]);           // numero 2
+            WriteI2C(0x00);                     // qualquer caractere
 
-            WriteI2C(0xFF);
-            WriteI2C(0x00);
+            WriteI2C(0xFF);                     // dois pontos ":" ativado
+            WriteI2C(0x00);                     // qualquer coisa
 
 
-            WriteI2C(numbertable[3]);
-            WriteI2C(0x00);
+            WriteI2C(numbertable[3]);           // numero 3
+            WriteI2C(0x00);                     // qualquer coisa
 
-            WriteI2C(numbertable[4] | 0x80);
-            WriteI2C(0x00);
+            WriteI2C(numbertable[4] | 0x80);    // numero 4 + ponto (0x80)
+            WriteI2C(0x00);                     // qualquer coisa
 
-            NotAckI2C();
-            __delay_us(16);
+            NotAckI2C();                        // finalizacao do envio
+            __delay_us(16); // delays de maneira experimental para testes
         StopI2C();
 
         LED_VERD=1;
-
-        
-
 }
 
 void getDS1307(void)
 {
-    char msg [40];
+    // rotina para LER a hora do circuito DS1307 via I2C
 
-    //#define StartI2C()  SSPCON2bits.SEN=1;while(SSPCON2bits.SEN)
+    char msg [40];
 
     LED_AMAR=1;
 
     IdleI2C();
+
     StartI2C();
-        //IdleI2C();
-        __delay_us(16);
+
+        __delay_us(16); // delay de maneira experimental para testes
         WriteI2C( 0xD0 );
-        //IdleI2C();
-        __delay_us(60);
+
+        __delay_us(60); // delay de maneira experimental para testes
         WriteI2C( 0x00 );
         IdleI2C();
-        __delay_us(16);
-        //AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();AckI2C();
+        __delay_us(16); // delay de maneira experimental para testes
+
     StopI2C();
     //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
 
@@ -309,42 +306,38 @@ void getDS1307(void)
     __delay_us(26);
 
     RestartI2C();
-        __delay_us(16);
+        __delay_us(16); // delay de maneira experimental para testes
 
         WriteI2C( 0xD1 );
-        __delay_us(1);
+        __delay_us(1); // delay de maneira experimental para testes
         IdleI2C();
 
-        segundo    = (int) ReadI2C();
+        segundo = ReadI2C();
         AckI2C();
         IdleI2C();
 
-        minuto  = (int) ReadI2C();
+        minuto = ReadI2C();
         AckI2C();
         IdleI2C();
 
-        hora = (int) ReadI2C();
-        NotAckI2C();
+        hora = ReadI2C();
+        NotAckI2C(); // finalizacao do envio
 
     StopI2C();
-    //#define StopI2C()  SSPCON2bits.PEN=1;while(SSPCON2bits.PEN)
-
 
     LED_VERM = 0; LED_AMAR=0; LED_VERD=1;
 
-        sprintf(msg,"\r\n%xh:%xm:%xs _ \r\n",
+        sprintf(msg,"\r\n%xh:%xm:%xs _ ",
             hora,minuto,segundo);
 
     while(BusyUSART());
     putsUSART( msg );
     
-
     LED_VERD=0;
 }
 
 void configuracao_EUSART (void)
 {
-    //#define CloseUSART( ) RCSTA&=0b01001111,TXSTAbits.TXEN=0,PIE1&=0b11001111
     CloseUSART();   // fecha qualquer USART que estaria supostamente aberta antes
                     // just closes any previous USART open port
 
@@ -361,4 +354,40 @@ void configuracao_EUSART (void)
 
                 // em 8 Mhz, com BRGH LOW (Bit Rate Generator LOW):
                 // 103 = 1200bps; 25 = 4800bps; 51 = 2400bps; 12 = 9600bps
+}
+
+void pausa (unsigned int segundos)
+{
+    if (segundos <= 0) return;
+
+    OpenTimer0( TIMER_INT_OFF &
+                T0_16BIT &
+                T0_PS_1_32 &
+                T0_SOURCE_INT &
+                T0_EDGE_FALL
+            );
+
+    __delay_ms(10); // delay nao necessario obrigatoriamente
+
+    WriteTimer0( 0xBDC );   // tempo de 1 segundo em 8mhz e pre 1/32
+
+    T0CONbits.TMR0ON = 1;     // Liga o Timer 0
+
+    INTCONbits.GIE      = 0;    // Interrupcoes Globais desligadas
+    INTCONbits.PEIE     = 0;    // Interrupcoes dos Perifericos desligadas
+    INTCONbits.TMR0IE   = 0;    // Interrupcoes do Timer0 desligadas
+    INTCONbits.TMR0IF   = 0;    // Zera o contador do Timer0
+
+    while (segundos > 0)
+    {
+        while (!TMR0IF) ;       // enquando o Timer0 nao tiver overflow, espere
+
+        LED_AMAR=~LED_AMAR;     // Led Amarelo pisca a cada segundo
+        INTCONbits.TMR0IF=0;    // Zera o contador do Timer0
+        segundos--;
+    }
+
+    CloseTimer0();              // Feche o Timer0
+
+    LED_AMAR=0; LED_VERM=0; LED_VERD=0;
 }
