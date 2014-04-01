@@ -9,6 +9,9 @@
  * Versao 0.1 - Exemplificacao com relogio digital, lendo a hora do relogio
  *              DS1307 via I2C, e exibindo no modulo 7-Segmentos I2C (ht16k33),
  *              e debug do log na serial EUSART (TX pino C6)
+ *            - atualizacao dentro do Linux Ubuntu 12.04 com SVN v 1.7.9
+ *              e MPLAB X IDE v2.05, Java: 1.7.0_25; Java HotSpot(TM) 64-Bit,
+ *              Server VM 23.25-b01, System: Linux version 3.11.0-19-
  *
  */
 
