@@ -15,6 +15,10 @@
  * Versao 0.2 - 01/abr/2014 - sistema mais estabilizado, pisca ":" e contador
  *              de pausa via TIMER0
  *
+ * Versao 0.3 - 02/abr/2014 - primeiros passos no Watchdog Timer e Sleep Mode
+ *              apenas um esboco dos principais comandos e registradores, sem
+ *              funcionar.
+ *
  */
 
 #include <xc.h>
@@ -24,12 +28,16 @@
 #include <plib/usart.h>
 #include <plib/timers.h>
 #include "configbits.h"
+#include <plib/dpslp.h>
+#include <pic18.h>
+#include <plib/reset.h>
 
 #define _XTAL_FREQ 8000000
 #define FOSC 8000000
 #define Baud 100000     // velocidade do barramento SCL (clock I2C)
 
 #define USE_AND_MASKS
+#define DPSLP_V1_1
 
 #define HT16K33_BLINK_CMD       0x80
 #define HT16K33_BLINK_DISPLAYON 0x01
@@ -73,6 +81,7 @@ void getDS1307(void);
 void configuracao_EUSART (void);
 void piscaSeg (char a);
 void pausa (unsigned int segundos);
+void dormir (void);
 
 void main (void)
 {
@@ -81,6 +90,8 @@ void main (void)
     TRISC2=0;   // LED Verm
     TRISC6=0;   // saida TX EUSART
     ADCON1=0x0F;    // coloca pinos I/O em modo digital (nao analogico)
+
+
 
     unsigned int D0, D1, D2, D3, minAnterior, contador;
     char msg[30];
@@ -391,3 +402,145 @@ void pausa (unsigned int segundos)
 
     LED_AMAR=0; LED_VERM=0; LED_VERD=0;
 }
+
+/* Funcoes do Deep Sleep:
+ * 
+ * void     DeepSleepWakeUpSource( SRC* ptr)
+ * void     gotoDeepSleep( unsigned int config )
+ * signed char IsResetFromDeepSleep( void)
+ * void     ReadDSGPR( CONTEXT* ptr)
+ * void     ULPWakeUpEnable( void)
+ * 
+ * Tipos de Wakeup/Reset (Wakeup source WKSRC):
+ * DS_POR   //wake up source is Power on reset
+ * DS_MCLR  //wake up source is master reset pin set to low
+ * DS_RTC   //wake up source is rtcc alarm
+ * DS_WDT   //wake up source is deep sleep watch dog timer expiry
+ * DS_FLT   //wake up due to fault in deep sleep configuration corruption
+ * DS_INT0  //wake up source is external interrupt
+ * DS_BOR   //Brown out occured during deep sleep
+ * DS_ULP   //wake up source is ultra low power wake up
+ * DS_ICD   //wake up source is In-circuit debugger
+ * DS_EXT   //wake up source is external interrupt
+ * 
+ * Registradores:
+ * Reg0;                   //Stores the DSGPR0 register contents
+ * Reg1;                   //Stores the DSGPR0 register content
+ 
+ * Macros do Deep Sleep:
+ * 
+ * Write_DSGPR(data1,data2)
+ * ReleaseDeepSleep()
+ *
+ * #define	ClrWdt()	asm(" clrwdt")
+ * #define	Reset()		asm(" reset")
+ * #define Sleep()		asm(" sleep")
+ */
+
+#include <plib/portb.h>
+#include <plib/timers.h>
+#include <plib/dpslp.h>
+#include <plib/pconfig.h>
+#include <plib/pps.h>
+#include <plib/rtcc.h>
+#include <plib/portb.h>
+
+#define WATCHDOG
+
+void dormir (void)
+{
+
+
+    WDTCONbits.SWDTEN=1;
+
+    Sleep();
+
+    SLEEP();
+
+    IsResetFromDeepSleep();
+
+    goto;
+
+    Release;
+
+    ClrWdt();
+
+
+    RCONbits.TO;
+
+
+
+
+}
+
+/*
+ * The power-managed Sleep mode in the PIC18F2525/
+2620/4525/4620 devices is identical to the legacy
+Sleep mode offered in all other PIC devices. It is
+entered by clearing the IDLEN bit (the default state on
+device Reset) and executing the SLEEP instruction.
+This shuts down the selected oscillator (Figure 3-5). All
+clock source status bits are cleared.
+ *
+Entering the Sleep mode from any other mode does not
+require a clock switch. This is because no clocks are
+needed once the controller has entered Sleep. If the
+WDT is selected, the INTRC source will continue to
+operate. If the Timer1 oscillator is enabled, it will also
+continue to run.
+ *
+When a wake event occurs in Sleep mode (by interrupt,
+Reset or WDT time-out), the device will not be clocked
+until the clock source selected by the SCS1:SCS0 bits
+becomes ready (see Figure 3-6), or it will be clocked
+from the internal oscillator block if either the Two-Speed
+Start-up or the Fail-Safe Clock Monitor are enabled
+(see Section 23.0 ?Special Features of the CPU?). In
+either case, the OSTS bit is set when the primary clock
+is providing the device clocks. The IDLEN and SCS bits
+are not affected by the wake-up.
+ */
+
+/*
+ 23.2
+Watchdog Timer (WDT)
+ *
+For PIC18F2525/2620/4525/4620 devices, the WDT is
+driven by the INTRC source. When the WDT is
+enabled, the clock source is also enabled. The nominal
+WDT period is 4 ms and has the same stability as the
+INTRC oscillator.
+ *
+The 4 ms period of the WDT is multiplied by a 16-bit
+postscaler. Any output of the WDT postscaler is
+selected by a multiplexer, controlled by bits in Configu-
+ration Register 2H. Available periods range from 4 ms
+to 131.072 seconds (2.18 minutes). The WDT and
+postscaler are cleared when any of the following events
+occur: a SLEEP or CLRWDT instruction is executed, the
+IRCF bits (OSCCON<6:4>) are changed or a clock
+failure has occurred.
+ *
+FIGURE 23-1:
+SWDTEN
+WDTEN
+ *
+Note 1: The CLRWDT and SLEEP instructions
+clear the WDT and postscaler counts
+when executed.
+ *
+2: Changing the setting of the IRCF bits
+(OSCCON<6:4>) clears the WDT and
+postscaler counts.
+ *
+3: When a CLRWDT instruction is executed,
+the postscaler count will be cleared.
+ * 
+23.2.1
+CONTROL REGISTER
+Register 23-14 shows the WDTCON register. This is a
+readable and writable register which contains a control
+bit that allows software to override the WDT enable
+Configuration bit, but
+ *
+ */
