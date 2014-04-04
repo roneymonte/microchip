@@ -47,7 +47,7 @@ extern "C" {
 
 // CONFIG2H
 #pragma config WDT = ON         // Watchdog Timer Enable bit (WDT enabled)
-#pragma config WDTPS = 32768    // Watchdog Timer Postscale Select bits (1:32768)
+#pragma config WDTPS = 16384    // Watchdog Timer Postscale Select bits (1:32768)
 
 // CONFIG3H
 #pragma config CCP2MX = PORTC   // CCP2 MUX bit (CCP2 input/output is multiplexed with RC1)

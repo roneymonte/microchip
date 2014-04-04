@@ -37,7 +37,7 @@
 #define Baud 100000     // velocidade do barramento SCL (clock I2C)
 
 #define USE_AND_MASKS
-#define DPSLP_V1_1
+
 
 #define HT16K33_BLINK_CMD       0x80
 #define HT16K33_BLINK_DISPLAYON 0x01
@@ -82,6 +82,7 @@ void configuracao_EUSART (void);
 void piscaSeg (char a);
 void pausa (unsigned int segundos);
 void dormir (void);
+void acordar (void);
 
 void main (void)
 {
@@ -91,13 +92,13 @@ void main (void)
     TRISC6=0;   // saida TX EUSART
     ADCON1=0x0F;    // coloca pinos I/O em modo digital (nao analogico)
 
+    acordar();
 
-
-    unsigned int D0, D1, D2, D3, minAnterior, contador;
+    unsigned int D0, D1, D2, D3, minAnterior, contador, segInicial;
     char msg[30];
 
     LED_VERM=1;
-    configuracao_EUSART();  // inicia porta serial com 9600 bps @ 8mhz
+     // inicia porta serial com 9600 bps @ 8mhz
 
     initExt7SegLCD();   // inicia barramento I2C e escreve ".12:34."
     pausa(1); piscaSeg(0);
@@ -107,9 +108,10 @@ void main (void)
     contador=60;    // o contador esta acima do limite (59)
     minAnterior=10; // o minuto nunca chegaria a 10 (forca display)
 
-    while (1){
+    while (1)
+    {
 
-        if (contador>59)    // ira requisitar hora I2C somente 1 vez ao minuto
+        if (contador > 59)  // ira requisitar hora I2C somente 1 vez ao minuto
         {
         getDS1307();
 
@@ -122,13 +124,16 @@ void main (void)
         D2 = (minuto & 0b11110000) >> 4;// utiliza somente 4 bits da nibble esq
         D3 = minuto & 0b00001111;       // utiliza somente 4 bits da nibble dir
 
+
         contador = segundo; //atualiza a contagem interna do loop com o seg real
         }
 
+            /*
             sprintf(msg,"___ %d%d:%d%d ...%xseg_ \r\n",
                 D0, D1, D2, D3 ,segundo);
             while(BusyUSART());
             putsUSART( msg );
+             */
 
         if (D3 != minAnterior)  // se mudou o minuto, entao mostre novo horario
         {
@@ -168,34 +173,23 @@ void main (void)
         if ( (contador % 2) == 0) piscaSeg(1);  // gera a piscada ":" par
         else piscaSeg(0); // ou impar " ", a cada mudanca de contador (seg)
 
-        /*
-        RestartI2C();
-            __delay_us(16);
-            WriteI2C(HT16K33_ADDR << 1);
-
-            WriteI2C(0x00);
-
-            WriteI2C(numbertable[0]);
-            WriteI2C(0x00);
-
-            WriteI2C(numbertable[0]);
-            WriteI2C(0x00);
-
-            WriteI2C(0x00);
-            WriteI2C(0x00);
+        
+        sprintf(msg,"\r\nSeg=%d, Contador=%d",segundo,contador );
+            while(BusyUSART());
+            putsUSART( msg );
 
 
-            WriteI2C(numbertable[0] );
-            WriteI2C(0x00);
+            // rotina abaixo de calculo de desvio de segundos
+            // ainda deve ser corrigida para o algoritmo correto
+        if (segundo < 50)
+            if (contador > (segundo+10) ) 
+                {contador=60;dormir();}
 
-            WriteI2C(numbertable[0]);
-            WriteI2C(0x00);
-
-            NotAckI2C();
-            __delay_us(16);
-        StopI2C();
-        */
-
+            else
+                if ((contador<segundo)  &&
+                    (contador > ( 60-segundo ) ) )
+                    {contador=60; dormir;}
+        
     }
 }
 
@@ -338,12 +332,12 @@ void getDS1307(void)
 
     LED_VERM = 0; LED_AMAR=0; LED_VERD=1;
 
-        sprintf(msg,"\r\n%xh:%xm:%xs _ ",
-            hora,minuto,segundo);
-
+    /*
+    sprintf(msg,"\r\n%xh:%xm:%xs _ ",
+        hora,minuto,segundo);
     while(BusyUSART());
     putsUSART( msg );
-    
+    */
     LED_VERD=0;
 }
 
@@ -393,14 +387,12 @@ void pausa (unsigned int segundos)
     {
         while (!TMR0IF) ;       // enquando o Timer0 nao tiver overflow, espere
 
-        LED_AMAR=~LED_AMAR;     // Led Amarelo pisca a cada segundo
+        LED_VERD=~LED_VERD;     // Led Amarelo pisca a cada segundo
         INTCONbits.TMR0IF=0;    // Zera o contador do Timer0
         segundos--;
     }
 
     CloseTimer0();              // Feche o Timer0
-
-    LED_AMAR=0; LED_VERM=0; LED_VERD=0;
 }
 
 /* Funcoes do Deep Sleep:
@@ -446,30 +438,70 @@ void pausa (unsigned int segundos)
 #include <plib/portb.h>
 
 #define WATCHDOG
+//#define DPSLP_V1_1
+//#define DPSLP_ULPWU_ENABLE
+
+#define USE_OR_MASKS
+#include <p18cxxx.h>
+#include <plib/dpslp.h>
+#include <plib/portb.h>
+#include <plib/rtcc.h>
 
 void dormir (void)
 {
+    LED_AMAR=1;
+    while(BusyUSART());
+    putrsUSART("\r\n...entrando em modo Sleep...");
+    CloseUSART();
 
-
-    WDTCONbits.SWDTEN=1;
-
-    Sleep();
-
+    IDLEN=0;
     SLEEP();
 
-    IsResetFromDeepSleep();
+    //ClrWdt();
 
-    goto;
+    //WDTCONbits.SWDTEN=1;
+    //WDTCONbits.SWDTE=1;
+    //WDT_ENABLED;
 
-    Release;
+    //OSTS_bit;
+    //IOFS_bit;
+    //T1RUN_bit;
+    configuracao_EUSART();
+    while(BusyUSART());
+    putrsUSART("\r\n...acordando dentro do subcomando Sleep...");
+    LED_AMAR=0;
 
-    ClrWdt();
+}
 
+void acordar (void)
+{
+    short int razao=0;
+    char msg[55];
+    short int RI=0, TO=0, PD=0, POR=0, BOR=0;
 
-    RCONbits.TO;
+    configuracao_EUSART();
 
+    RI=RCON &  0b10000 >> 4;
+    TO=RCON &  0b01000 >> 3;
+    PD=RCON &  0b00100 >> 2;
+    POR=RCON & 0b00010 >> 1;
+    BOR=RCON & 0b00001;
 
+    razao = RCON & 0b11111; // pega somente os 5 primeiros bits de RCON
 
+    sprintf(msg,"\r\nWakeup: [0x%X] RI=%d, TO=%d, PD=%d, POR=%d, BOR=%d\r\n", razao);
+    while(BusyUSART());
+    putsUSART( msg );
+
+    while (razao-- >= 0)
+    {
+        LED_VERD=1;
+        Delay10KTCYx(50);
+        LED_VERD=0;
+        Delay10KTCYx(50);
+    }
+
+    Delay10KTCYx(100);
 
 }
 
