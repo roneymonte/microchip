@@ -54,7 +54,7 @@
 #define LED_VERD    PORTCbits.RC1
 #define LED_VERM    PORTCbits.RC2
 
-int hora, minuto, segundo;
+unsigned int hora, minuto, segundo;
 const unsigned char numbertable[] =
 {
     0x3F, /* 0 */
@@ -105,17 +105,16 @@ void main (void)
 
     // Inicio do Relogio e Display
 
-    contador=60;    // o contador esta acima do limite (59)
+    contador=0;    // o contador esta acima do limite (59)
     minAnterior=10; // o minuto nunca chegaria a 10 (forca display)
 
     while (1)
     {
 
-        if (contador > 59)  // ira requisitar hora I2C somente 1 vez ao minuto
-        {
+        
         getDS1307();
 
-            sprintf(msg," ___[%x:%x:%x]___", hora, minuto,segundo );
+        sprintf(msg," _[%x:%x:%x]_", hora, minuto, segundo );
             while(BusyUSART());
             putsUSART( msg );
 
@@ -123,10 +122,6 @@ void main (void)
         D1 = hora & 0b00001111;         // utiliza somente 4 bits da nibble dir
         D2 = (minuto & 0b11110000) >> 4;// utiliza somente 4 bits da nibble esq
         D3 = minuto & 0b00001111;       // utiliza somente 4 bits da nibble dir
-
-
-        contador = segundo; //atualiza a contagem interna do loop com o seg real
-        }
 
             /*
             sprintf(msg,"___ %d%d:%d%d ...%xseg_ \r\n",
@@ -168,28 +163,33 @@ void main (void)
         }
 
         pausa(1);   // utiliza TIMER0 para realizar contagem precisa de 1 seg
-        contador++; // incrementa controle de contagem de segundos
+        
         
         if ( (contador % 2) == 0) piscaSeg(1);  // gera a piscada ":" par
         else piscaSeg(0); // ou impar " ", a cada mudanca de contador (seg)
 
         
-        sprintf(msg,"\r\nSeg=%d, Contador=%d",segundo,contador );
+        sprintf(msg,"\r\nSeg=%d, Cont=%d", segundo, contador );
             while(BusyUSART());
             putsUSART( msg );
 
 
             // rotina abaixo de calculo de desvio de segundos
             // ainda deve ser corrigida para o algoritmo correto
-        if (segundo < 50)
-            if (contador > (segundo+10) ) 
-                {contador=60;dormir();}
 
-            else
-                if ((contador<segundo)  &&
-                    (contador > ( 60-segundo ) ) )
-                    {contador=60; dormir;}
-        
+            if (contador >= 2 ) // cont >= 40+10
+                { 
+                    
+                    dormir();
+
+                    sprintf(msg,"\r\nSeg=%d, Cont=%d (volta do sleep)", segundo, contador );
+                    while(BusyUSART());
+                    putsUSART( msg );
+                    contador=0;
+            
+                }
+
+        contador++; // incrementa controle de contagem de segundos
     }
 }
 
@@ -429,29 +429,23 @@ void pausa (unsigned int segundos)
  * #define Sleep()		asm(" sleep")
  */
 
-#include <plib/portb.h>
-#include <plib/timers.h>
-#include <plib/dpslp.h>
-#include <plib/pconfig.h>
-#include <plib/pps.h>
-#include <plib/rtcc.h>
-#include <plib/portb.h>
-
-#define WATCHDOG
-//#define DPSLP_V1_1
-//#define DPSLP_ULPWU_ENABLE
-
-#define USE_OR_MASKS
-#include <p18cxxx.h>
-#include <plib/dpslp.h>
-#include <plib/portb.h>
-#include <plib/rtcc.h>
 
 void dormir (void)
 {
-    LED_AMAR=1;
+    char msg[40];
+    short int W1=0, W2=0, W3=0;
+    
     while(BusyUSART());
     putrsUSART("\r\n...entrando em modo Sleep...");
+
+    W1 =  OSCCON & 0b100 ;
+    W2 =  OSCCON & 0b010 ;
+    W3 =  T1CON & 0b100000 ;
+
+    sprintf(msg," _OSTS=%d, IOFS=%d, T1RUN=%d\r\n", W1 , W2 , W3 );
+    while(BusyUSART());
+    putsUSART( msg );
+
     CloseUSART();
 
     IDLEN=0;
@@ -469,7 +463,14 @@ void dormir (void)
     configuracao_EUSART();
     while(BusyUSART());
     putrsUSART("\r\n...acordando dentro do subcomando Sleep...");
-    LED_AMAR=0;
+
+    W1 =  OSCCON & 0b100 ;
+    W2 =  OSCCON & 0b010 ;
+    W3 =  T1CON & 0b100000 ;
+
+    sprintf(msg," _OSTS=%d, IOFS=%d, T1RUN=%d\r\n", W1 , W2 , W3 );
+    while(BusyUSART());
+    putsUSART( msg );
 
 }
 
@@ -477,19 +478,14 @@ void acordar (void)
 {
     short int razao=0;
     char msg[55];
-    short int RI=0, TO=0, PD=0, POR=0, BOR=0;
 
     configuracao_EUSART();
 
-    RI=RCON &  0b10000 >> 4;
-    TO=RCON &  0b01000 >> 3;
-    PD=RCON &  0b00100 >> 2;
-    POR=RCON & 0b00010 >> 1;
-    BOR=RCON & 0b00001;
-
     razao = RCON & 0b11111; // pega somente os 5 primeiros bits de RCON
 
-    sprintf(msg,"\r\nWakeup: [0x%X] RI=%d, TO=%d, PD=%d, POR=%d, BOR=%d\r\n", razao);
+    sprintf(msg,"\r\nWakeup: [0x%X] RI=%d, TO=%d, PD=%d, POR=%d, BOR=%d\r\n", razao,
+            RCONbits.RI , RCONbits.TO, RCONbits.PD, RCONbits.POR, RCONbits.BOR
+            );
     while(BusyUSART());
     putsUSART( msg );
 
